@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>TEMBAK BALON JUARA — Matematika SD</title>
+<style>
+/* =====================================================================
+   TEMBAK BALON JUARA — Battle Tembak Balon Jawaban
+   Satu file mandiri (HTML + CSS + JS), tanpa library & tanpa file luar.
+   ===================================================================== */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#0d47a1;
+  font-family:"Trebuchet MS","Comic Sans MS","Segoe UI",Arial,sans-serif;color:#1a237e;
+  user-select:none;-webkit-user-select:none;touch-action:manipulation}
+button{font-family:inherit;cursor:pointer;border:none;outline:none}
+#app{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh}
+
+/* ---------- Layar umum ---------- */
+.layar{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}
+.layar.aktif{display:flex}
+.bg-meriah{background:
+  radial-gradient(circle at 15% 20%,rgba(255,235,59,.55) 0,transparent 35%),
+  radial-gradient(circle at 85% 15%,rgba(255,82,82,.40) 0,transparent 35%),
+  radial-gradient(circle at 80% 85%,rgba(105,240,174,.50) 0,transparent 38%),
+  radial-gradient(circle at 10% 85%,rgba(186,104,200,.45) 0,transparent 38%),
+  linear-gradient(160deg,#29b6f6 0%,#81d4fa 45%,#ffffff 100%)}
+
+.btn-besar{font-size:clamp(20px,3.4vw,40px);font-weight:900;color:#fff;padding:.55em 1.6em;border-radius:999px;
+  background:linear-gradient(180deg,#66bb6a,#2e7d32);box-shadow:0 .25em 0 #1b5e20,0 .6em 1.2em rgba(0,0,0,.25);
+  transition:transform .12s,box-shadow .12s;letter-spacing:.04em}
+.btn-besar:hover{transform:translateY(-3px) scale(1.03)}
+.btn-besar:active{transform:translateY(3px);box-shadow:0 .08em 0 #1b5e20}
+.btn-biru{background:linear-gradient(180deg,#42a5f5,#1565c0);box-shadow:0 .25em 0 #0d47a1,0 .6em 1.2em rgba(0,0,0,.25)}
+.btn-biru:active{box-shadow:0 .08em 0 #0d47a1}
+
+/* ---------- Halaman pembuka ---------- */
+#layarPembuka{align-items:center;justify-content:center;text-align:center;gap:2.2vh;padding:2vh 4vw}
+.hias{position:absolute;font-size:clamp(40px,8vw,110px);animation:melayangHias 6s ease-in-out infinite;pointer-events:none;filter:drop-shadow(0 6px 6px rgba(0,0,0,.2))}
+@keyframes melayangHias{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-3vh) rotate(6deg)}}
+.judul-besar{font-size:clamp(34px,8vw,104px);font-weight:900;line-height:1;color:#fff;
+  text-shadow:0 .06em 0 #e53935,0 .12em 0 #b71c1c,0 .2em .3em rgba(0,0,0,.35);-webkit-text-stroke:2px #c62828;
+  animation:denyut 2.4s ease-in-out infinite;position:relative;z-index:2}
+.judul-besar span{color:#ffee58;-webkit-text-stroke:2px #f57f17;text-shadow:0 .06em 0 #f9a825,0 .12em 0 #ef6c00,0 .2em .3em rgba(0,0,0,.35)}
+@keyframes denyut{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.sub-judul{font-size:clamp(16px,2.8vw,34px);font-weight:800;color:#0d47a1;background:rgba(255,255,255,.85);
+  padding:.45em 1.1em;border-radius:999px;box-shadow:0 6px 14px rgba(0,0,0,.18);max-width:92vw;position:relative;z-index:2}
+.sub-kelas{font-size:clamp(14px,2vw,24px);font-weight:700;color:#37474f;position:relative;z-index:2}
+#layarPembuka .btn-besar{position:relative;z-index:2;margin-top:1vh}
+#pojokKanan{position:absolute;right:2vw;top:2vh;z-index:3;display:flex;align-items:center;gap:.7em}
+#pojokKanan .ikon-btn:hover{transform:rotate(8deg) scale(1.08)}
+#teksKredit{background:#fff;color:#1a237e;font-weight:800;font-size:clamp(13px,1.6vw,20px);padding:.5em 1em;border-radius:999px;
+  box-shadow:0 3px 8px rgba(0,0,0,.25);opacity:0;transform:translateX(10px);transition:.3s;pointer-events:none;white-space:nowrap}
+#teksKredit.tampil{opacity:1;transform:none}
+
+/* ---------- Pilih Mode Soal & Pengaturan pemain (tema ungu-biru) ---------- */
+.bg-ungu{background:linear-gradient(150deg,#6f89f2 0%,#5a6ddb 50%,#4b5cc9 100%)}
+.judul-layar{color:#fff;font-weight:900;font-size:clamp(26px,4.2vw,54px);text-shadow:0 3px 0 rgba(0,0,0,.14);letter-spacing:.02em;text-align:center}
+.btn-putih{background:#fff;color:#4b5cc9;font-weight:900;border-radius:14px;padding:.55em 1.5em;font-size:clamp(15px,1.9vw,24px);box-shadow:0 5px 14px rgba(0,0,0,.2);transition:transform .12s}
+.btn-putih:hover{transform:translateY(-2px)}.btn-putih:active{transform:translateY(2px)}
+#layarMode{align-items:center;justify-content:center;gap:clamp(14px,3.2vh,34px);padding:2vh 3vw}
+#gridMode{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(10px,1.8vw,24px);width:min(1320px,100%)}
+.kartu-mode{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3em;text-align:center;color:#fff;font-weight:800;
+  background:rgba(255,255,255,.2);border:2.5px solid rgba(255,255,255,.9);border-radius:18px;padding:.5em .6em;min-height:clamp(84px,16vh,124px);transition:transform .15s,background .15s}
+.kartu-mode:hover{background:rgba(255,255,255,.34);transform:translateY(-3px)}
+.kartu-mode:active{transform:scale(.97)}
+.kartu-mode.aktif{background:#fff;color:#4b5cc9}
+.km-judul{display:flex;align-items:center;gap:.4em;font-size:clamp(17px,2.2vw,30px)}
+.km-ikon{font-size:1.05em;line-height:1}
+.km-ket{font-size:clamp(12px,1.4vw,19px);font-weight:700;line-height:1.15;opacity:.95}
+
+/* ---------- Pilih Mode Soal: tema ceria full color ---------- */
+#layarMode{background:
+  radial-gradient(circle at 8% 12%,rgba(255,235,59,.55) 0,transparent 30%),
+  radial-gradient(circle at 92% 10%,rgba(0,229,255,.5) 0,transparent 32%),
+  radial-gradient(circle at 90% 92%,rgba(105,240,174,.5) 0,transparent 32%),
+  radial-gradient(circle at 6% 90%,rgba(255,138,128,.55) 0,transparent 32%),
+  linear-gradient(135deg,#5b6cf0 0%,#8e44ec 38%,#ec4899 72%,#fb923c 100%)}
+#layarMode>*:not(.hias){position:relative;z-index:1}
+#layarMode .hias{font-size:clamp(28px,5vw,64px);opacity:.9}
+#layarMode .judul-layar{color:#fff;text-shadow:0 .05em 0 #d81b60,0 .1em 0 #ad1457,0 .18em .3em rgba(0,0,0,.3);-webkit-text-stroke:1.5px #ad1457;animation:denyut 2.6s ease-in-out infinite}
+.sub-mode{font-weight:800;color:#6a1b9a;background:rgba(255,255,255,.92);padding:.3em 1.1em;border-radius:999px;font-size:clamp(12px,1.6vw,20px);box-shadow:0 4px 10px rgba(0,0,0,.18);margin-top:calc(-1 * clamp(6px,1.6vh,18px))}
+.kartu-mode{--a:#ff6b6b;--b:#ee5253;--d:#b71c1c;background:linear-gradient(160deg,var(--a),var(--b));border:3.5px solid #fff;
+  box-shadow:0 6px 0 var(--d),0 12px 20px rgba(0,0,0,.25);text-shadow:0 2px 3px rgba(0,0,0,.28);position:relative;overflow:hidden;
+  animation:kartuMasuk .5s cubic-bezier(.2,1.4,.4,1) backwards;animation-delay:calc(var(--i) * 50ms);min-height:clamp(96px,17vh,134px)}
+.kartu-mode::before{content:"";position:absolute;top:-35%;left:-20%;width:70%;height:90%;border-radius:50%;background:rgba(255,255,255,.18);pointer-events:none}
+.kartu-mode:hover{background:linear-gradient(160deg,var(--a),var(--b));filter:brightness(1.08);transform:translateY(-5px) rotate(-1.2deg);box-shadow:0 10px 0 var(--d),0 16px 24px rgba(0,0,0,.3)}
+.kartu-mode:active{transform:translateY(3px);box-shadow:0 2px 0 var(--d)}
+.kartu-mode .km-ikon{display:flex;align-items:center;justify-content:center;width:1.9em;height:1.9em;border-radius:50%;background:#fff;color:var(--b);
+  font-size:clamp(18px,2.5vw,34px);font-weight:900;text-shadow:none;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.kartu-mode .km-judul{font-size:clamp(17px,2.2vw,30px)}
+.kartu-mode .km-ket{opacity:1}
+@keyframes kartuMasuk{from{transform:scale(.3) translateY(30px);opacity:0}to{transform:none;opacity:1}}
+@media (max-width:760px){#gridMode{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+#layarSetup{align-items:center;justify-content:center;gap:clamp(10px,2.2vh,24px);padding:2vh 3vw}
+.setup-atas{width:min(1100px,100%);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1em}
+.setup-atas .judul-layar{font-size:clamp(24px,3.6vw,46px)}
+.chip-mode{justify-self:end;display:flex;align-items:center;gap:.6em;color:#fff;font-weight:800;line-height:1.15;font-size:clamp(14px,1.8vw,24px);
+  background:rgba(255,255,255,.2);border:2.5px solid rgba(255,255,255,.9);border-radius:16px;padding:.35em 1em}
+.chip-mode small{display:block;font-weight:600;opacity:.92;font-size:.68em}
+.chip-mode .km-ikon{font-size:1.5em}
+.setup-grid{width:min(1100px,100%);display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,2vw,26px);align-items:stretch}
+.setup-kiri{display:flex;flex-direction:column;gap:clamp(12px,2vw,26px)}
+.panel{background:rgba(255,255,255,.16);border:2.5px solid rgba(255,255,255,.85);border-radius:20px;padding:clamp(12px,2.2vh,22px) clamp(14px,1.8vw,24px);color:#fff}
+.setup-kiri .panel{flex:1;display:flex;flex-direction:column;justify-content:center}
+.panel h3{font-size:clamp(16px,2vw,26px);font-weight:900;margin-bottom:.6em;display:flex;align-items:center;gap:.5em}
+.panel h3 b{width:1.6em;height:1.6em;border-radius:50%;background:#fff;color:#4b5cc9;display:inline-flex;align-items:center;justify-content:center;font-size:.8em}
+.opsi-baris{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1vw,14px)}
+.opsi{display:flex;align-items:center;justify-content:center;gap:.4em;color:#fff;font-weight:800;font-size:clamp(14px,1.8vw,24px);
+  background:rgba(255,255,255,.2);border:2.5px solid rgba(255,255,255,.85);border-radius:14px;padding:.4em .3em;min-height:clamp(46px,8vh,66px);transition:.15s}
+.opsi:hover{background:rgba(255,255,255,.34)}
+.opsi.aktif{background:#fff;color:#4b5cc9;box-shadow:0 0 0 4px rgba(255,255,255,.35)}
+.opsi .titik{width:.7em;height:.7em;border-radius:50%;background:var(--k);box-shadow:0 0 0 2px #fff}
+.daftar-nama{display:flex;flex-direction:column;gap:clamp(6px,1.2vh,12px)}
+.baris-nama{display:flex;align-items:center;gap:.6em;background:#fff;border-left:8px solid var(--c);border-radius:14px;padding:.15em .6em}
+.baris-nama:focus-within{box-shadow:0 0 0 4px rgba(255,255,255,.45)}
+.baris-nama .lencana-p{flex:none;width:clamp(28px,3.2vw,38px);height:clamp(28px,3.2vw,38px);border-radius:50%;background:var(--c);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:900;font-size:clamp(14px,1.8vw,22px)}
+.baris-nama input{flex:1;min-width:0;border:none;outline:none;font:inherit;font-size:clamp(15px,1.9vw,24px);font-weight:700;color:#263238;padding:.4em .2em;background:transparent}
+.catatan{font-size:clamp(11px,1.2vw,15px);color:rgba(255,255,255,.9);margin-top:.7em;font-weight:600}
+.setup-bawah{width:min(1100px,100%);display:flex;align-items:center;justify-content:space-between;gap:1em}
+#ringkasan{color:#fff;font-weight:700;font-size:clamp(12px,1.5vw,19px);line-height:1.35;background:rgba(255,255,255,.16);border:2px dashed rgba(255,255,255,.8);border-radius:14px;padding:.5em 1em;flex:1;max-width:620px}
+.btn-utama{flex:none;background:linear-gradient(180deg,#43a047,#2e7d32);color:#fff;font-weight:900;border-radius:14px;padding:.7em 1.8em;font-size:clamp(16px,2vw,24px);
+  box-shadow:0 4px 0 #1b5e20,0 8px 16px rgba(0,0,0,.25);transition:transform .12s}
+.btn-utama:hover{transform:translateY(-2px)}.btn-utama:active{transform:translateY(3px);box-shadow:0 1px 0 #1b5e20}
+@media (max-width:820px){.setup-grid{grid-template-columns:1fr}.setup-atas{grid-template-columns:auto 1fr}.setup-atas .chip-mode{display:none}}
+
+/* ---------- Layar permainan ---------- */
+#layarGame{background:linear-gradient(180deg,#4fc3f7 0%,#81d4fa 45%,#e1f5fe 80%,#ffffff 100%)}
+.langit{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.awan{position:absolute;width:140px;height:44px;background:#fff;border-radius:50px;opacity:.9;animation:awanJalan linear infinite}
+.awan::before,.awan::after{content:"";position:absolute;background:#fff;border-radius:50%}
+.awan::before{width:60px;height:60px;top:-30px;left:22px}
+.awan::after{width:46px;height:46px;top:-20px;left:70px}
+@keyframes awanJalan{from{transform:translateX(-200px)}to{transform:translateX(110vw)}}
+.bukit{position:absolute;bottom:-12vh;border-radius:50%;background:linear-gradient(180deg,#81c784,#388e3c)}
+
+#header{position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:1vw;padding:.4vh 1vw;
+  min-height:clamp(48px,8.5vh,72px);background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(255,255,255,.85));
+  border-bottom:5px solid #1565c0;box-shadow:0 4px 12px rgba(0,0,0,.2);flex:none}
+.grup-kiri,.grup-kanan{flex:none;display:flex;align-items:center;gap:clamp(6px,.8vw,12px)}
+#judulGame{font-weight:900;color:#0d47a1;font-size:clamp(16px,2.3vw,30px);text-align:center;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#infoLevel{background:linear-gradient(180deg,#ffb74d,#ef6c00);color:#fff;font-weight:900;font-size:clamp(11px,1.35vw,18px);
+  padding:.35em .9em;border-radius:12px;box-shadow:0 3px 0 #bf360c;white-space:nowrap}
+.ikon-btn{flex:none;width:clamp(40px,3.8vw,54px);height:clamp(40px,3.8vw,54px);border-radius:14px;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:clamp(18px,2vw,26px);transition:transform .1s,filter .15s;position:relative}
+.ikon-btn svg{width:58%;height:58%;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.ikon-btn svg .isi{fill:currentColor;stroke:none}
+.ikon-btn:hover{filter:brightness(1.1)}.ikon-btn:active{transform:scale(.92)}
+.ik-biru{background:linear-gradient(180deg,#42a5f5,#1565c0);box-shadow:0 3px 0 #0d47a1}
+.ik-hijau{background:linear-gradient(180deg,#66bb6a,#2e7d32);box-shadow:0 3px 0 #1b5e20}
+.ik-oranye{background:linear-gradient(180deg,#ffa726,#e65100);box-shadow:0 3px 0 #bf360c}
+.ik-merah{background:linear-gradient(180deg,#ef5350,#b71c1c);box-shadow:0 3px 0 #7f0000}
+.ik-abu{background:linear-gradient(180deg,#90a4ae,#546e7a);box-shadow:0 3px 0 #37474f}
+.pemisah{width:2px;height:60%;background:#b6cbe6;border-radius:2px;margin:0 .2vw}
+#toast{position:absolute;left:50%;bottom:4vh;transform:translateX(-50%) translateY(20px);z-index:40;background:rgba(13,42,99,.92);color:#fff;font-weight:800;
+  padding:.55em 1.2em;border-radius:999px;font-size:clamp(13px,1.6vw,20px);opacity:0;pointer-events:none;transition:.25s}
+#toast.tampil{opacity:1;transform:translateX(-50%)}
+@media (max-width:900px){#judulGame{display:none}.grup-kiri{flex:1}}
+
+#arena{position:relative;z-index:2;flex:1;min-height:0;display:flex}
+.area{position:relative;flex:1;min-width:0;overflow:hidden;display:flex;flex-direction:column;container-type:inline-size;
+  background:linear-gradient(180deg,rgba(255,255,255,0) 0%,var(--cl) 100%);
+  border-left:6px solid var(--c);border-right:6px solid var(--c);transition:filter .3s}
+.area:first-child{border-left-width:0}.area:last-child{border-right-width:0}
+.area.terkunci{filter:grayscale(.45)}
+.area.terkunci .balon{opacity:.4;pointer-events:none}
+
+/* bagian atas tiap area: skor di pojok kiri atas + nomor soal */
+.bar-atas{flex:none;position:relative;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:.5em;padding:6px 8px 0}
+.skor-pojok{display:flex;align-items:center;gap:.35em;min-width:0;background:var(--c);color:#fff;border-radius:18px;padding:.12em .35em .12em .7em;
+  font-weight:900;box-shadow:0 3px 8px rgba(0,0,0,.3);transition:transform .2s,box-shadow .2s}
+.skor-pojok .mh{display:none;animation:goyang2 1.2s ease-in-out infinite}
+.skor-pojok.memimpin .mh{display:inline-block}
+.skor-pojok.memimpin{box-shadow:0 0 0 3px #ffd600,0 5px 12px rgba(0,0,0,.35)}
+.skor-pojok .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-size:clamp(12px,4.6cqw,20px)}
+.skor-pojok .sk{background:#fff;color:var(--c);border-radius:14px;min-width:1.7em;text-align:center;padding:0 .3em;line-height:1.25;
+  font-size:20px;font-size:clamp(18px,8.5cqw,36px)}
+.skor-pojok .sk.naik{animation:skorNaik .6s ease-out}
+@keyframes skorNaik{0%{transform:scale(1)}35%{transform:scale(1.5);color:#2e7d32}100%{transform:scale(1)}}
+@keyframes goyang2{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+.no-soal{flex:none;font-weight:900;color:#37474f;background:rgba(255,255,255,.88);border-radius:999px;padding:.15em .7em;
+  font-size:12px;font-size:clamp(11px,3.6cqw,16px);white-space:nowrap}
+/* soal di atas masing-masing kotak pemain */
+.soal-area{flex:none;position:relative;z-index:4;margin:6px 8px 0;background:rgba(255,255,255,.94);border:4px solid var(--c);border-radius:16px;
+  padding:.35em .55em;text-align:center;font-weight:900;color:#0d47a1;line-height:1.15;display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-size:clamp(13px,5.6cqw,30px);min-height:3.2em;box-shadow:0 4px 10px rgba(0,0,0,.18)}
+.soal-area.panjang{font-size:13px;font-size:clamp(12px,4.2cqw,24px)}
+.soal-area.ganti{animation:soalMasuk .3s ease-out}
+@keyframes soalMasuk{from{transform:translateY(-14px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+.ladang{position:relative;flex:1;min-height:0;overflow:hidden}
+
+/* Balon */
+.balon{position:absolute;left:0;top:0;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:900;line-height:1.1;
+  border-radius:50% 50% 48% 48% / 58% 58% 42% 42%;padding:0 9%;cursor:pointer;will-change:transform;z-index:3;
+  background:radial-gradient(circle at 32% 24%,rgba(255,255,255,.75),rgba(255,255,255,0) 30%),var(--bg);
+  box-shadow:inset -8px -10px 18px rgba(0,0,0,.22),0 6px 14px rgba(0,0,0,.22);transition:opacity .35s}
+.balon span{display:block;max-width:100%;word-break:break-word;text-shadow:var(--ts)}
+.balon::before{content:"";position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:11px solid var(--bg)}
+.balon::after{content:"";position:absolute;left:50%;top:100%;width:2px;height:55px;margin-top:3px;background:rgba(60,60,60,.5);transform:translateX(-50%)}
+.balon:active{filter:brightness(1.1)}
+.balon.meletus{animation:pecah .28s ease-out forwards;pointer-events:none}
+@keyframes pecah{0%{scale:1;opacity:1}100%{scale:1.9;opacity:0}}
+.balon.memudar{opacity:0;pointer-events:none}
+
+.asap{position:absolute;width:34px;height:34px;border-radius:50%;z-index:6;pointer-events:none;
+  background:radial-gradient(circle,rgba(120,120,120,.85),rgba(160,160,160,.5) 60%,rgba(160,160,160,0) 72%);animation:asapNaik .9s ease-out forwards}
+@keyframes asapNaik{0%{transform:translate(0,0) scale(.4);opacity:.95}100%{transform:translate(var(--dx),var(--dy)) scale(3);opacity:0}}
+.teks-melayang{position:absolute;z-index:7;pointer-events:none;font-weight:900;font-size:clamp(20px,3vw,40px);
+  text-shadow:0 2px 0 #fff,0 0 8px #fff;animation:melayangTeks 1.1s ease-out forwards;transform:translateX(-50%)}
+@keyframes melayangTeks{0%{opacity:0;margin-top:0}15%{opacity:1}100%{opacity:0;margin-top:-80px}}
+
+/* Banner di dalam area pemain (salah / waktu habis / selesai) */
+.banner-area{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);z-index:8;max-width:90%;text-align:center;font-weight:900;color:#fff;
+  font-size:16px;font-size:clamp(14px,5.4cqw,30px);padding:.5em .9em;border-radius:18px;pointer-events:none;box-shadow:0 8px 20px rgba(0,0,0,.35);
+  animation:munculBanner .25s ease-out}
+.banner-area.salah{background:linear-gradient(180deg,#e53935,#b71c1c);border:4px solid #ffcdd2}
+.banner-area.selesai{background:linear-gradient(180deg,#43a047,#1b5e20);border:4px solid #c8e6c9}
+.banner-area small{display:block;font-size:.66em;font-weight:800;margin-top:.25em}
+@keyframes munculBanner{from{transform:translate(-50%,-50%) scale(.7);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
+
+#hitung{position:absolute;inset:0;z-index:25;display:none;align-items:center;justify-content:center;background:rgba(13,71,161,.35);
+  font-size:clamp(70px,22vw,260px);font-weight:900;color:#fff;text-shadow:0 8px 0 #1565c0,0 14px 24px rgba(0,0,0,.4)}
+#hitung.tampil{display:flex}
+#hitung span{animation:angkaMuncul .8s ease-out}
+@keyframes angkaMuncul{from{transform:scale(2.2);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* ---------- Halaman akhir ---------- */
+#layarAkhir{align-items:center;justify-content:space-between;padding:2vh 3vw;text-align:center}
+#judulAkhir{font-size:clamp(26px,5.2vw,64px);font-weight:900;color:#fff;text-shadow:0 .06em 0 #e65100,0 .15em .3em rgba(0,0,0,.35);-webkit-text-stroke:2px #e65100;
+  animation:denyut 1.6s ease-in-out infinite}
+#subAkhir{font-size:clamp(16px,2.8vw,34px);font-weight:900;color:#0d47a1;background:rgba(255,255,255,.88);padding:.35em 1.1em;border-radius:999px;box-shadow:0 5px 12px rgba(0,0,0,.2);max-width:94vw}
+#podium{flex:1;min-height:0;width:min(1000px,96vw);display:flex;align-items:flex-end;justify-content:center;gap:clamp(6px,1.6vw,22px);padding-top:3vh}
+.p-item{flex:1;max-width:240px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;min-width:0}
+.p-info{display:flex;flex-direction:column;align-items:center;margin-bottom:.6vh;max-width:100%}
+.p-mahkota{font-size:clamp(28px,5vw,64px);line-height:1;animation:goyang2 1.2s ease-in-out infinite}
+@keyframes goyang2{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+.p-nama{font-weight:900;font-size:clamp(15px,2.6vw,34px);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#1a237e;background:rgba(255,255,255,.9);padding:.1em .7em;border-radius:999px}
+.p-skor{font-weight:900;font-size:clamp(14px,2vw,26px);color:#37474f}
+.p-batang{width:100%;height:0;border-radius:18px 18px 0 0;background:linear-gradient(180deg,var(--c),var(--c2));border:5px solid #fff;border-bottom:none;
+  display:flex;align-items:flex-start;justify-content:center;padding-top:.3em;font-weight:900;color:#fff;font-size:clamp(28px,5vw,64px);
+  transition:height 1.1s cubic-bezier(.2,1.2,.4,1);text-shadow:0 3px 0 rgba(0,0,0,.25);box-shadow:0 10px 24px rgba(0,0,0,.28)}
+#layarAkhir .btn-besar{flex:none;margin-top:1.2vh}
+
+/* ---------- Modal konfirmasi ---------- */
+#modal{position:absolute;inset:0;z-index:60;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center}
+#modal.tampil{display:flex}
+.kotak-modal{background:#fff;border-radius:26px;padding:clamp(18px,3vh,36px) clamp(18px,3vw,44px);text-align:center;max-width:min(640px,92vw);border:6px solid #ffca28;box-shadow:0 16px 40px rgba(0,0,0,.45)}
+.kotak-modal p{font-size:clamp(18px,2.6vw,32px);font-weight:900;color:#263238;margin-bottom:2vh}
+.kotak-modal .btn-besar{font-size:clamp(16px,2.2vw,28px);margin:0 .6em}
+.btn-abu{background:linear-gradient(180deg,#90a4ae,#546e7a)!important;box-shadow:0 .25em 0 #37474f!important}
+
+#confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:80}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ================= HALAMAN PEMBUKA ================= -->
+  <section id="layarPembuka" class="layar bg-meriah aktif">
+    <span class="hias" style="left:6vw;top:10vh;animation-delay:0s">🎈</span>
+    <span class="hias" style="right:15vw;top:16vh;animation-delay:-1.5s">🎈</span>
+    <span class="hias" style="left:12vw;bottom:14vh;animation-delay:-3s">☁️</span>
+    <span class="hias" style="right:10vw;bottom:12vh;animation-delay:-4s">🎉</span>
+    <h1 class="judul-besar">TEMBAK<br><span>BALON JUARA</span></h1>
+    <div class="sub-kelas">Battle Tembak Balon Jawaban • 3 Level: Mudah • Sedang • Sulit</div>
+    <button class="btn-besar" id="btnMulai">🚀 MULAI PERMAINAN</button>
+    <div id="pojokKanan">
+      <div id="teksKredit">Pengembang : Jasrin R. Nupura, S.Pd</div>
+      <button class="ikon-btn ik-oranye" id="btnKredit" title="Info pengembang" aria-label="Info pengembang">🎓</button>
+      <button class="ikon-btn ik-biru" id="btnFullHome" title="Layar Penuh" aria-label="Layar Penuh"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+    </div>
+  </section>
+
+  <!-- ================= PENGATURAN PEMAIN ================= -->
+  <section id="layarMode" class="layar">
+    <span class="hias" style="left:3vw;top:8vh;animation-delay:0s">🎈</span>
+    <span class="hias" style="right:4vw;top:6vh;animation-delay:-1.5s">🎈</span>
+    <span class="hias" style="left:5vw;bottom:9vh;animation-delay:-3s">⭐</span>
+    <span class="hias" style="right:6vw;bottom:8vh;animation-delay:-4.2s">🎉</span>
+    <h2 class="judul-layar">Pilih Mode Soal</h2>
+    <div class="sub-mode">Ayo pilih jenis soal yang ingin dimainkan! 🎯</div>
+    <div id="gridMode"></div>
+    <button class="btn-putih" id="btnKembaliMode">← Kembali</button>
+  </section>
+
+  <!-- ================= PENGATURAN PEMAIN ================= -->
+  <section id="layarSetup" class="layar bg-ungu">
+    <div class="setup-atas">
+      <button class="btn-putih" id="btnGantiMode" style="justify-self:start">← Ganti Mode</button>
+      <h2 class="judul-layar">Pengaturan Pemain</h2>
+      <div class="chip-mode" id="chipMode"></div>
+    </div>
+    <div class="setup-grid">
+      <div class="setup-kiri">
+        <div class="panel"><h3><b>1</b>Level Soal</h3><div class="opsi-baris" id="pilihLevel"></div></div>
+        <div class="panel"><h3><b>2</b>Jumlah Pemain</h3><div class="opsi-baris" id="pilihJumlah"></div></div>
+      </div>
+      <div class="panel">
+        <h3><b>3</b>Nama Pemain</h3>
+        <div class="daftar-nama" id="gridNama"></div>
+        <div class="catatan">Kosongkan = nama bawaan (Pemain 1, 2, …)</div>
+      </div>
+    </div>
+    <div class="setup-bawah">
+      <div id="ringkasan"></div>
+      <button class="btn-utama" id="btnMasukGame">🎯 MULAI PERMAINAN</button>
+    </div>
+  </section>
+
+  <!-- ================= LAYAR PERMAINAN ================= -->
+  <section id="layarGame" class="layar">
+    <div class="langit" id="langit"></div>
+    <header id="header">
+      <div class="grup-kiri">
+        <button class="ikon-btn ik-biru" id="btnHome" title="Halaman Utama" aria-label="Halaman Utama">
+          <svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h5v-6h3v6h5V10"/></svg></button>
+        <div id="infoLevel">Level 1</div>
+      </div>
+      <div id="judulGame">🎈 TEMBAK BALON JUARA</div>
+      <div class="grup-kanan">
+        <button class="ikon-btn ik-hijau" id="btnRonde" title="Mulai Ronde Berikutnya (lewati soal untuk semua pemain)" aria-label="Mulai Ronde Berikutnya">
+          <svg viewBox="0 0 24 24"><path class="isi" d="M5 4.5v15l10.5-7.5z"/><path d="M19 4.5v15"/></svg></button>
+        <button class="ikon-btn ik-oranye" id="btnResetSkor" title="Reset Skor Semua Pemain" aria-label="Reset Skor Semua Pemain">
+          <svg viewBox="0 0 24 24"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3 4v4.5h4.5"/><text x="12" y="15.6" text-anchor="middle" font-size="9" font-weight="900" fill="currentColor" stroke="none">0</text></svg></button>
+        <button class="ikon-btn ik-merah" id="btnResetGame" title="Reset Permainan" aria-label="Reset Permainan">
+          <svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.5-5.8"/><path d="M20 4v5h-5"/></svg></button>
+        <span class="pemisah"></span>
+        <button class="ikon-btn ik-biru" id="btnFullGame" title="Layar Penuh" aria-label="Layar Penuh"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+        <button class="ikon-btn ik-abu" id="btnSuara" title="Suara" aria-label="Suara">🔊</button>
+      </div>
+    </header>
+    <main id="arena"></main>
+    <div id="hitung"><span id="angkaHitung">3</span></div>
+    <div id="toast"></div>
+  </section>
+
+  <!-- ================= HALAMAN AKHIR ================= -->
+  <section id="layarAkhir" class="layar bg-meriah">
+    <div id="judulAkhir">🏆 PERMAINAN SELESAI!</div>
+    <div id="subAkhir">…</div>
+    <div id="podium"></div>
+    <button class="btn-besar" id="btnMainLagi">🔁 MAIN LAGI</button>
+  </section>
+
+  <!-- Modal konfirmasi -->
+  <div id="modal">
+    <div class="kotak-modal">
+      <p id="teksModal">Yakin?</p>
+      <button class="btn-besar" id="btnModalYa">Ya</button>
+      <button class="btn-besar btn-abu" id="btnModalBatal">Batal</button>
+    </div>
+  </div>
+
+  <canvas id="confetti"></canvas>
+</div>
+
+<script>
+/* =====================================================================
+   1) BANK SOAL  — GURU BISA MENGEDIT DI SINI SAJA
+   ---------------------------------------------------------------------
+   Soal dikelompokkan per MODE  →  per LEVEL (1 Mudah, 2 Sedang, 3 Sulit).
+   Mode: tambah, kurang, kali, bagi, pangkat, akar, persen, fpb, kpk, waktu, jarak.
+   Mode "campuran" mengambil soal seimbang dari tambah, kurang, kali, dan bagi.
+   Setiap soal berbentuk:
+     { soal: "teks pertanyaan",
+       opsi: ["opsi A", "opsi B", "opsi C", "opsi D"],   // tepat 4 opsi
+       benar: 0 }                                        // nomor opsi yang benar (0 = A, 1 = B, 2 = C, 3 = D)
+   Urutan opsi akan diacak otomatis untuk tiap pemain, jadi jawaban benar
+   boleh diletakkan di mana saja.
+   ===================================================================== */
+const bankSoal = {
+  /* Mode "campuran" tidak punya bank sendiri: soalnya diambil seimbang dari tambah, kurang, kali, dan bagi. */
+  /* ################ PENJUMLAHAN (Tambah angka) ################ */
+  tambah: {
+    /* Level 1 */
+    1: [
+      { soal: "Budi punya 7 pensil, lalu diberi 2 pensil lagi. Berapa jumlah pensil Budi sekarang?", opsi: ["9", "7", "11", "10"], benar: 0 },
+      { soal: "Ani punya 13 buku, lalu diberi 3 buku lagi. Berapa jumlah buku Ani sekarang?", opsi: ["15", "18", "6", "16"], benar: 3 },
+      { soal: "Doni punya 4 pensil, lalu diberi 4 pensil lagi. Berapa jumlah pensil Doni sekarang?", opsi: ["6", "8", "9", "7"], benar: 1 },
+      { soal: "Hasil dari 17 + 1 adalah ....", opsi: ["20", "28", "19", "18"], benar: 3 },
+      { soal: "Hasil dari 13 + 1 adalah ....", opsi: ["24", "13", "12", "14"], benar: 3 },
+      { soal: "Sari punya 4 buku, lalu diberi 3 buku lagi. Berapa jumlah buku Sari sekarang?", opsi: ["6", "5", "9", "7"], benar: 3 },
+      { soal: "Ani punya 1 buku, lalu diberi 1 buku lagi. Berapa jumlah buku Ani sekarang?", opsi: ["4", "3", "2", "12"], benar: 2 },
+      { soal: "Hasil dari 6 + 3 adalah ....", opsi: ["11", "3", "19", "9"], benar: 3 },
+      { soal: "Budi punya 14 kelereng, lalu diberi 5 kelereng lagi. Berapa jumlah kelereng Budi sekarang?", opsi: ["17", "20", "18", "19"], benar: 3 },
+      { soal: "Hasil dari 3 + 2 adalah ....", opsi: ["7", "3", "15", "5"], benar: 3 },
+      { soal: "Hasil dari 11 + 6 adalah ....", opsi: ["18", "5", "15", "17"], benar: 3 },
+      { soal: "Hasil dari 3 + 5 adalah ....", opsi: ["8", "18", "7", "6"], benar: 0 },
+      { soal: "Hasil dari 3 + 6 adalah ....", opsi: ["19", "7", "9", "8"], benar: 2 },
+      { soal: "Hasil dari 14 + 1 adalah ....", opsi: ["13", "25", "15", "17"], benar: 2 },
+      { soal: "Hasil dari 3 + 3 adalah ....", opsi: ["16", "6", "7", "4"], benar: 1 },
+      { soal: "Hasil dari 13 + 2 adalah ....", opsi: ["16", "15", "13", "5"], benar: 1 },
+      { soal: "Ani punya 12 apel, lalu diberi 4 apel lagi. Berapa jumlah apel Ani sekarang?", opsi: ["17", "16", "8", "6"], benar: 1 },
+      { soal: "Hasil dari 6 + 1 adalah ....", opsi: ["5", "6", "8", "7"], benar: 3 },
+      { soal: "Hasil dari 10 + 5 adalah ....", opsi: ["14", "25", "17", "15"], benar: 3 },
+      { soal: "Hasil dari 12 + 3 adalah ....", opsi: ["25", "15", "17", "13"], benar: 1 }
+    ],
+    /* Level 2 */
+    2: [
+      { soal: "43 + 15 = ....", opsi: ["58", "48", "68", "57"], benar: 0 },
+      { soal: "41 + 26 = ....", opsi: ["67", "65", "77", "15"], benar: 0 },
+      { soal: "59 + 30 = ....", opsi: ["87", "91", "88", "89"], benar: 3 },
+      { soal: "68 + 11 = ....", opsi: ["80", "69", "89", "79"], benar: 3 },
+      { soal: "52 + 42 = ....", opsi: ["96", "93", "95", "94"], benar: 3 },
+      { soal: "20 + 13 = ....", opsi: ["33", "7", "31", "32"], benar: 0 },
+      { soal: "60 + 23 = ....", opsi: ["73", "83", "85", "93"], benar: 1 },
+      { soal: "30 + 30 = ....", opsi: ["50", "60", "62", "61"], benar: 1 },
+      { soal: "67 + 32 = ....", opsi: ["99", "89", "97", "109"], benar: 0 },
+      { soal: "20 + 15 = ....", opsi: ["37", "25", "35", "33"], benar: 2 },
+      { soal: "41 + 23 = ....", opsi: ["64", "18", "63", "62"], benar: 0 },
+      { soal: "22 + 22 = ....", opsi: ["45", "43", "34", "44"], benar: 3 },
+      { soal: "21 + 32 = ....", opsi: ["43", "63", "51", "53"], benar: 3 },
+      { soal: "63 + 11 = ....", opsi: ["75", "73", "74", "72"], benar: 2 },
+      { soal: "46 + 22 = ....", opsi: ["68", "70", "78", "67"], benar: 0 },
+      { soal: "40 + 20 = ....", opsi: ["59", "70", "60", "62"], benar: 2 },
+      { soal: "35 + 51 = ....", opsi: ["86", "88", "87", "84"], benar: 0 },
+      { soal: "30 + 47 = ....", opsi: ["76", "79", "77", "67"], benar: 2 },
+      { soal: "74 + 24 = ....", opsi: ["100", "98", "99", "97"], benar: 1 },
+      { soal: "60 + 20 = ....", opsi: ["79", "82", "80", "70"], benar: 2 }
+    ],
+    /* Level 3 */
+    3: [
+      { soal: "2.013 + 2.866 = ....", opsi: ["4.880", "4.878", "4.879", "4.979"], benar: 2 },
+      { soal: "3.635 + 1.113 = ....", opsi: ["4.738", "3.748", "2.522", "4.748"], benar: 3 },
+      { soal: "4.193 + 704 = ....", opsi: ["4.897", "4.887", "5.897", "4.797"], benar: 0 },
+      { soal: "7.130 + 1.729 = ....", opsi: ["8.759", "8.859", "8.860", "8.869"], benar: 1 },
+      { soal: "8.223 + 1.072 = ....", opsi: ["9.195", "9.295", "8.295", "9.305"], benar: 1 },
+      { soal: "2.412 + 1.477 = ....", opsi: ["3.888", "3.889", "3.989", "2.889"], benar: 1 },
+      { soal: "2.422 + 3.363 = ....", opsi: ["5.785", "5.795", "5.685", "5.784"], benar: 0 },
+      { soal: "4.220 + 1.038 = ....", opsi: ["5.258", "6.258", "4.258", "5.259"], benar: 0 },
+      { soal: "2.223 + 3.056 = ....", opsi: ["5.379", "5.179", "5.279", "5.280"], benar: 2 },
+      { soal: "2.091 + 3.404 = ....", opsi: ["4.495", "5.505", "5.495", "5.494"], benar: 2 },
+      { soal: "4.040 + 4.946 = ....", opsi: ["8.985", "8.987", "8.996", "8.986"], benar: 3 },
+      { soal: "6.031 + 1.000 = ....", opsi: ["7.041", "8.031", "6.031", "7.031"], benar: 3 },
+      { soal: "5.712 + 4.263 = ....", opsi: ["9.974", "9.975", "10.975", "9.985"], benar: 1 },
+      { soal: "7.231 + 1.607 = ....", opsi: ["8.938", "7.838", "8.837", "8.838"], benar: 3 },
+      { soal: "2.380 + 5.309 = ....", opsi: ["7.689", "7.688", "7.589", "7.679"], benar: 0 },
+      { soal: "6.344 + 3.213 = ....", opsi: ["3.131", "9.557", "9.547", "10.557"], benar: 1 },
+      { soal: "7.210 + 225 = ....", opsi: ["7.435", "7.445", "7.425", "8.435"], benar: 0 },
+      { soal: "3.012 + 2.104 = ....", opsi: ["5.216", "5.115", "5.116", "5.126"], benar: 2 },
+      { soal: "7.241 + 2.607 = ....", opsi: ["9.838", "9.748", "10.848", "9.848"], benar: 3 },
+      { soal: "914 + 6.031 = ....", opsi: ["6.945", "6.935", "7.045", "6.955"], benar: 0 }
+    ]
+  },
+  /* ################ PENGURANGAN (Kurangi angka) ################ */
+  kurang: {
+    /* Level 1 */
+    1: [
+      { soal: "Hasil dari 15 - 1 adalah ....", opsi: ["16", "14", "24", "13"], benar: 1 },
+      { soal: "Hasil dari 4 - 1 adalah ....", opsi: ["5", "1", "2", "3"], benar: 3 },
+      { soal: "Dito punya 18 kelereng, lalu kelereng itu dipakai 12. Berapa sisa kelereng Dito?", opsi: ["6", "8", "7", "16"], benar: 0 },
+      { soal: "Hasil dari 19 - 18 adalah ....", opsi: ["11", "37", "3", "1"], benar: 3 },
+      { soal: "Rina punya 16 permen, lalu permen itu dipakai 13. Berapa sisa permen Rina?", opsi: ["4", "3", "13", "2"], benar: 1 },
+      { soal: "Hasil dari 17 - 12 adalah ....", opsi: ["5", "29", "6", "3"], benar: 0 },
+      { soal: "Ani punya 9 kelereng, lalu kelereng itu dipakai 4. Berapa sisa kelereng Ani?", opsi: ["6", "3", "4", "5"], benar: 3 },
+      { soal: "Hasil dari 7 - 1 adalah ....", opsi: ["6", "5", "7", "8"], benar: 0 },
+      { soal: "Hasil dari 16 - 2 adalah ....", opsi: ["14", "18", "16", "15"], benar: 0 },
+      { soal: "Sari punya 19 buku, lalu buku itu dipakai 16. Berapa sisa buku Sari?", opsi: ["35", "13", "4", "3"], benar: 3 },
+      { soal: "Budi punya 18 apel, lalu apel itu dipakai 8. Berapa sisa apel Budi?", opsi: ["20", "9", "10", "11"], benar: 2 },
+      { soal: "Hasil dari 15 - 4 adalah ....", opsi: ["13", "1", "11", "9"], benar: 2 },
+      { soal: "Hasil dari 4 - 3 adalah ....", opsi: ["7", "1", "11", "3"], benar: 1 },
+      { soal: "Hasil dari 15 - 13 adalah ....", opsi: ["1", "2", "28", "4"], benar: 1 },
+      { soal: "Dito punya 16 kelapa, lalu kelapa itu dipakai 14. Berapa sisa kelapa Dito?", opsi: ["30", "3", "4", "2"], benar: 3 },
+      { soal: "Hasil dari 18 - 16 adalah ....", opsi: ["12", "1", "34", "2"], benar: 3 },
+      { soal: "Hasil dari 19 - 6 adalah ....", opsi: ["23", "11", "15", "13"], benar: 3 },
+      { soal: "Hasil dari 3 - 1 adalah ....", opsi: ["1", "12", "2", "3"], benar: 2 },
+      { soal: "Hasil dari 18 - 11 adalah ....", opsi: ["17", "6", "5", "7"], benar: 3 },
+      { soal: "Budi punya 12 apel, lalu apel itu dipakai 11. Berapa sisa apel Budi?", opsi: ["1", "2", "23", "3"], benar: 0 }
+    ],
+    /* Level 2 */
+    2: [
+      { soal: "45 - 40 = ....", opsi: ["15", "5", "85", "3"], benar: 1 },
+      { soal: "63 - 43 = ....", opsi: ["22", "10", "30", "20"], benar: 3 },
+      { soal: "86 - 31 = ....", opsi: ["117", "55", "65", "45"], benar: 1 },
+      { soal: "65 - 24 = ....", opsi: ["41", "89", "42", "40"], benar: 0 },
+      { soal: "74 - 62 = ....", opsi: ["22", "2", "11", "12"], benar: 3 },
+      { soal: "45 - 43 = ....", opsi: ["88", "2", "1", "12"], benar: 1 },
+      { soal: "63 - 20 = ....", opsi: ["33", "53", "43", "45"], benar: 2 },
+      { soal: "87 - 43 = ....", opsi: ["46", "130", "44", "43"], benar: 2 },
+      { soal: "78 - 62 = ....", opsi: ["16", "15", "17", "18"], benar: 0 },
+      { soal: "98 - 82 = ....", opsi: ["15", "14", "16", "6"], benar: 2 },
+      { soal: "98 - 10 = ....", opsi: ["87", "86", "90", "88"], benar: 3 },
+      { soal: "57 - 25 = ....", opsi: ["32", "31", "33", "22"], benar: 0 },
+      { soal: "89 - 80 = ....", opsi: ["9", "169", "11", "8"], benar: 0 },
+      { soal: "89 - 49 = ....", opsi: ["39", "42", "40", "41"], benar: 2 },
+      { soal: "92 - 81 = ....", opsi: ["10", "11", "1", "9"], benar: 1 },
+      { soal: "99 - 85 = ....", opsi: ["14", "184", "24", "15"], benar: 0 },
+      { soal: "83 - 13 = ....", opsi: ["60", "68", "69", "70"], benar: 3 },
+      { soal: "46 - 32 = ....", opsi: ["12", "78", "13", "14"], benar: 3 },
+      { soal: "84 - 63 = ....", opsi: ["21", "22", "23", "20"], benar: 0 },
+      { soal: "80 - 30 = ....", opsi: ["60", "50", "52", "40"], benar: 1 }
+    ],
+    /* Level 3 */
+    3: [
+      { soal: "6.226 - 3.124 = ....", opsi: ["3.102", "3.103", "3.002", "2.102"], benar: 0 },
+      { soal: "8.978 - 6.354 = ....", opsi: ["2.634", "2.614", "2.524", "2.624"], benar: 3 },
+      { soal: "4.884 - 4.712 = ....", opsi: ["172", "1.172", "173", "272"], benar: 0 },
+      { soal: "4.433 - 3.213 = ....", opsi: ["1.320", "1.219", "1.220", "2.220"], benar: 2 },
+      { soal: "2.927 - 722 = ....", opsi: ["2.205", "3.649", "2.204", "2.195"], benar: 0 },
+      { soal: "8.664 - 2.314 = ....", opsi: ["6.340", "5.350", "10.978", "6.350"], benar: 3 },
+      { soal: "6.979 - 5.564 = ....", opsi: ["1.414", "1.425", "1.415", "2.415"], benar: 2 },
+      { soal: "5.756 - 4.124 = ....", opsi: ["1.532", "1.632", "9.880", "632"], benar: 1 },
+      { soal: "3.614 - 3.501 = ....", opsi: ["13", "114", "7.115", "113"], benar: 3 },
+      { soal: "7.777 - 4.365 = ....", opsi: ["3.413", "3.412", "2.412", "3.402"], benar: 1 },
+      { soal: "8.466 - 6.060 = ....", opsi: ["2.506", "2.396", "2.306", "2.406"], benar: 3 },
+      { soal: "6.885 - 3.051 = ....", opsi: ["3.844", "3.835", "3.734", "3.834"], benar: 3 },
+      { soal: "8.916 - 8.110 = ....", opsi: ["906", "1.806", "806", "816"], benar: 2 },
+      { soal: "8.498 - 1.465 = ....", opsi: ["9.963", "7.023", "7.033", "7.034"], benar: 2 },
+      { soal: "7.792 - 2.782 = ....", opsi: ["4.910", "5.011", "5.020", "5.010"], benar: 3 },
+      { soal: "8.029 - 6.007 = ....", opsi: ["2.023", "2.032", "2.022", "14.036"], benar: 2 },
+      { soal: "6.949 - 2.733 = ....", opsi: ["5.216", "4.215", "4.216", "4.116"], benar: 2 },
+      { soal: "6.975 - 6.424 = ....", opsi: ["551", "552", "451", "550"], benar: 0 },
+      { soal: "8.741 - 8.020 = ....", opsi: ["16.761", "721", "731", "621"], benar: 1 },
+      { soal: "4.749 - 3.120 = ....", opsi: ["1.629", "7.869", "1.628", "1.630"], benar: 0 }
+    ]
+  },
+  /* ################ PERKALIAN (Kali angka) ################ */
+  kali: {
+    /* Level 1 */
+    1: [
+      { soal: "9 × 2 = ....", opsi: ["18", "20", "27", "28"], benar: 0 },
+      { soal: "6 × 4 = ....", opsi: ["20", "23", "30", "24"], benar: 3 },
+      { soal: "9 × 3 = ....", opsi: ["27", "12", "24", "37"], benar: 0 },
+      { soal: "5 × 3 = ....", opsi: ["15", "16", "18", "14"], benar: 0 },
+      { soal: "2 × 6 = ....", opsi: ["12", "11", "6", "18"], benar: 0 },
+      { soal: "2 × 3 = ....", opsi: ["8", "4", "6", "5"], benar: 2 },
+      { soal: "9 × 4 = ....", opsi: ["45", "36", "37", "13"], benar: 1 },
+      { soal: "5 × 2 = ....", opsi: ["15", "11", "10", "9"], benar: 2 },
+      { soal: "5 × 6 = ....", opsi: ["29", "36", "30", "11"], benar: 2 },
+      { soal: "4 × 2 = ....", opsi: ["6", "4", "12", "8"], benar: 3 },
+      { soal: "3 × 8 = ....", opsi: ["32", "11", "23", "24"], benar: 3 },
+      { soal: "7 × 2 = ....", opsi: ["21", "12", "9", "14"], benar: 3 },
+      { soal: "4 × 5 = ....", opsi: ["9", "20", "30", "21"], benar: 1 },
+      { soal: "2 × 4 = ....", opsi: ["8", "6", "10", "7"], benar: 0 },
+      { soal: "2 × 2 = ....", opsi: ["6", "5", "4", "2"], benar: 2 },
+      { soal: "4 × 4 = ....", opsi: ["26", "12", "8", "16"], benar: 3 },
+      { soal: "2 × 10 = ....", opsi: ["30", "18", "20", "12"], benar: 2 },
+      { soal: "5 × 10 = ....", opsi: ["15", "60", "50", "51"], benar: 2 },
+      { soal: "7 × 5 = ....", opsi: ["35", "25", "40", "34"], benar: 0 },
+      { soal: "9 × 5 = ....", opsi: ["40", "45", "36", "50"], benar: 1 }
+    ],
+    /* Level 2 */
+    2: [
+      { soal: "4 × 10 = ....", opsi: ["40", "50", "30", "41"], benar: 0 },
+      { soal: "5 × 9 = ....", opsi: ["54", "40", "46", "45"], benar: 3 },
+      { soal: "6 × 6 = ....", opsi: ["35", "30", "36", "26"], benar: 2 },
+      { soal: "9 × 10 = ....", opsi: ["19", "99", "100", "90"], benar: 3 },
+      { soal: "9 × 7 = ....", opsi: ["64", "63", "62", "72"], benar: 1 },
+      { soal: "9 × 6 = ....", opsi: ["48", "55", "54", "44"], benar: 2 },
+      { soal: "10 × 8 = ....", opsi: ["80", "81", "70", "88"], benar: 0 },
+      { soal: "7 × 6 = ....", opsi: ["35", "32", "42", "52"], benar: 2 },
+      { soal: "6 × 10 = ....", opsi: ["70", "59", "50", "60"], benar: 3 },
+      { soal: "5 × 10 = ....", opsi: ["55", "15", "40", "50"], benar: 3 },
+      { soal: "6 × 2 = ....", opsi: ["11", "12", "22", "10"], benar: 1 },
+      { soal: "9 × 9 = ....", opsi: ["81", "72", "91", "82"], benar: 0 },
+      { soal: "3 × 10 = ....", opsi: ["40", "30", "20", "29"], benar: 1 },
+      { soal: "4 × 9 = ....", opsi: ["36", "13", "46", "26"], benar: 0 },
+      { soal: "6 × 3 = ....", opsi: ["28", "12", "8", "18"], benar: 3 },
+      { soal: "9 × 2 = ....", opsi: ["18", "20", "9", "28"], benar: 0 },
+      { soal: "10 × 9 = ....", opsi: ["99", "100", "80", "90"], benar: 3 },
+      { soal: "4 × 8 = ....", opsi: ["32", "33", "42", "31"], benar: 0 },
+      { soal: "8 × 8 = ....", opsi: ["16", "65", "64", "56"], benar: 2 },
+      { soal: "5 × 8 = ....", opsi: ["40", "45", "39", "13"], benar: 0 }
+    ],
+    /* Level 3 */
+    3: [
+      { soal: "68 × 2 = ....", opsi: ["236", "126", "146", "136"], benar: 3 },
+      { soal: "20 × 9 = ....", opsi: ["180", "160", "190", "170"], benar: 0 },
+      { soal: "31 × 9 = ....", opsi: ["379", "280", "279", "310"], benar: 2 },
+      { soal: "30 × 3 = ....", opsi: ["33", "91", "90", "60"], benar: 2 },
+      { soal: "80 × 6 = ....", opsi: ["481", "479", "480", "580"], benar: 2 },
+      { soal: "17 × 2 = ....", opsi: ["34", "24", "134", "36"], benar: 0 },
+      { soal: "39 × 4 = ....", opsi: ["156", "166", "160", "152"], benar: 0 },
+      { soal: "88 × 2 = ....", opsi: ["176", "178", "88", "186"], benar: 0 },
+      { soal: "98 × 6 = ....", opsi: ["594", "490", "588", "598"], benar: 2 },
+      { soal: "26 × 3 = ....", opsi: ["88", "75", "78", "77"], benar: 2 },
+      { soal: "19 × 6 = ....", opsi: ["133", "115", "113", "114"], benar: 3 },
+      { soal: "32 × 7 = ....", opsi: ["39", "224", "223", "256"], benar: 1 },
+      { soal: "27 × 6 = ....", opsi: ["162", "189", "163", "262"], benar: 0 },
+      { soal: "50 × 3 = ....", opsi: ["150", "149", "160", "53"], benar: 0 },
+      { soal: "74 × 3 = ....", opsi: ["225", "222", "77", "221"], benar: 1 },
+      { soal: "51 × 3 = ....", opsi: ["204", "153", "152", "163"], benar: 1 },
+      { soal: "74 × 7 = ....", opsi: ["618", "444", "528", "518"], benar: 3 },
+      { soal: "14 × 4 = ....", opsi: ["42", "56", "52", "55"], benar: 1 },
+      { soal: "76 × 3 = ....", opsi: ["218", "228", "227", "152"], benar: 1 },
+      { soal: "23 × 7 = ....", opsi: ["161", "261", "171", "168"], benar: 0 }
+    ]
+  },
+  /* ################ PEMBAGIAN (Bagi angka) ################ */
+  bagi: {
+    /* Level 1 */
+    1: [
+      { soal: "50 ÷ 5 = ....", opsi: ["8", "10", "45", "5"], benar: 1 },
+      { soal: "25 ÷ 5 = ....", opsi: ["5", "6", "15", "3"], benar: 0 },
+      { soal: "24 ÷ 4 = ....", opsi: ["5", "7", "4", "6"], benar: 3 },
+      { soal: "45 ÷ 5 = ....", opsi: ["11", "5", "9", "40"], benar: 2 },
+      { soal: "9 ÷ 3 = ....", opsi: ["13", "1", "3", "6"], benar: 2 },
+      { soal: "18 ÷ 3 = ....", opsi: ["3", "16", "8", "6"], benar: 3 },
+      { soal: "24 ÷ 3 = ....", opsi: ["8", "6", "9", "7"], benar: 0 },
+      { soal: "10 ÷ 5 = ....", opsi: ["5", "2", "3", "4"], benar: 1 },
+      { soal: "4 ÷ 2 = ....", opsi: ["4", "3", "2", "12"], benar: 2 },
+      { soal: "8 ÷ 4 = ....", opsi: ["12", "4", "1", "2"], benar: 3 },
+      { soal: "20 ÷ 4 = ....", opsi: ["5", "15", "6", "4"], benar: 0 },
+      { soal: "12 ÷ 3 = ....", opsi: ["2", "3", "4", "5"], benar: 2 },
+      { soal: "5 ÷ 5 = ....", opsi: ["1", "5", "11", "3"], benar: 0 },
+      { soal: "4 ÷ 4 = ....", opsi: ["2", "3", "11", "1"], benar: 3 },
+      { soal: "6 ÷ 2 = ....", opsi: ["5", "2", "3", "4"], benar: 2 },
+      { soal: "27 ÷ 3 = ....", opsi: ["9", "19", "8", "3"], benar: 0 },
+      { soal: "16 ÷ 4 = ....", opsi: ["12", "5", "14", "4"], benar: 3 },
+      { soal: "21 ÷ 3 = ....", opsi: ["3", "7", "17", "5"], benar: 1 },
+      { soal: "14 ÷ 2 = ....", opsi: ["8", "6", "12", "7"], benar: 3 },
+      { soal: "40 ÷ 4 = ....", opsi: ["36", "11", "20", "10"], benar: 3 }
+    ],
+    /* Level 2 */
+    2: [
+      { soal: "12 ÷ 6 = ....", opsi: ["2", "4", "6", "1"], benar: 0 },
+      { soal: "56 ÷ 8 = ....", opsi: ["17", "9", "48", "7"], benar: 3 },
+      { soal: "80 ÷ 8 = ....", opsi: ["9", "8", "20", "10"], benar: 3 },
+      { soal: "63 ÷ 9 = ....", opsi: ["9", "17", "7", "8"], benar: 2 },
+      { soal: "35 ÷ 7 = ....", opsi: ["5", "7", "6", "4"], benar: 0 },
+      { soal: "64 ÷ 8 = ....", opsi: ["18", "8", "56", "9"], benar: 1 },
+      { soal: "16 ÷ 8 = ....", opsi: ["2", "12", "8", "1"], benar: 0 },
+      { soal: "90 ÷ 10 = ....", opsi: ["11", "10", "7", "9"], benar: 3 },
+      { soal: "36 ÷ 9 = ....", opsi: ["4", "5", "9", "2"], benar: 0 },
+      { soal: "72 ÷ 8 = ....", opsi: ["7", "19", "9", "10"], benar: 2 },
+      { soal: "28 ÷ 7 = ....", opsi: ["5", "6", "7", "4"], benar: 3 },
+      { soal: "50 ÷ 10 = ....", opsi: ["40", "5", "15", "3"], benar: 1 },
+      { soal: "70 ÷ 7 = ....", opsi: ["10", "8", "63", "9"], benar: 0 },
+      { soal: "27 ÷ 9 = ....", opsi: ["5", "1", "3", "18"], benar: 2 },
+      { soal: "45 ÷ 9 = ....", opsi: ["5", "3", "6", "9"], benar: 0 },
+      { soal: "48 ÷ 8 = ....", opsi: ["6", "16", "40", "5"], benar: 0 },
+      { soal: "32 ÷ 8 = ....", opsi: ["4", "24", "6", "3"], benar: 0 },
+      { soal: "49 ÷ 7 = ....", opsi: ["7", "5", "42", "6"], benar: 0 },
+      { soal: "24 ÷ 6 = ....", opsi: ["6", "3", "14", "4"], benar: 3 },
+      { soal: "40 ÷ 10 = ....", opsi: ["3", "6", "10", "4"], benar: 3 }
+    ],
+    /* Level 3 */
+    3: [
+      { soal: "496 ÷ 8 = ....", opsi: ["8", "61", "52", "62"], benar: 3 },
+      { soal: "200 ÷ 5 = ....", opsi: ["40", "5", "38", "41"], benar: 0 },
+      { soal: "448 ÷ 7 = ....", opsi: ["65", "54", "64", "66"], benar: 2 },
+      { soal: "216 ÷ 6 = ....", opsi: ["210", "34", "26", "36"], benar: 3 },
+      { soal: "85 ÷ 5 = ....", opsi: ["5", "19", "17", "15"], benar: 2 },
+      { soal: "95 ÷ 5 = ....", opsi: ["29", "9", "19", "90"], benar: 2 },
+      { soal: "168 ÷ 2 = ....", opsi: ["74", "94", "84", "86"], benar: 2 },
+      { soal: "184 ÷ 4 = ....", opsi: ["46", "36", "180", "45"], benar: 0 },
+      { soal: "522 ÷ 6 = ....", opsi: ["87", "516", "85", "6"], benar: 0 },
+      { soal: "632 ÷ 8 = ....", opsi: ["69", "79", "78", "8"], benar: 1 },
+      { soal: "392 ÷ 4 = ....", opsi: ["108", "96", "98", "97"], benar: 2 },
+      { soal: "576 ÷ 6 = ....", opsi: ["86", "97", "6", "96"], benar: 3 },
+      { soal: "48 ÷ 4 = ....", opsi: ["10", "12", "13", "44"], benar: 1 },
+      { soal: "228 ÷ 6 = ....", opsi: ["38", "6", "222", "40"], benar: 0 },
+      { soal: "776 ÷ 8 = ....", opsi: ["95", "768", "96", "97"], benar: 3 },
+      { soal: "333 ÷ 9 = ....", opsi: ["27", "37", "35", "47"], benar: 1 },
+      { soal: "261 ÷ 3 = ....", opsi: ["87", "77", "85", "88"], benar: 0 },
+      { soal: "207 ÷ 3 = ....", opsi: ["79", "69", "59", "67"], benar: 1 },
+      { soal: "240 ÷ 4 = ....", opsi: ["61", "58", "62", "60"], benar: 3 },
+      { soal: "837 ÷ 9 = ....", opsi: ["93", "9", "92", "83"], benar: 0 }
+    ]
+  },
+  /* ################ PANGKAT (Kuadrat & kubik) ################ */
+  pangkat: {
+    /* Level 1 */
+    1: [
+      { soal: "Kuadrat dari 7 adalah ....", opsi: ["49", "21", "14", "64"], benar: 0 },
+      { soal: "12² = ....", opsi: ["24", "169", "134", "144"], benar: 3 },
+      { soal: "Kuadrat dari 3 adalah ....", opsi: ["9", "12", "16", "6"], benar: 0 },
+      { soal: "11² = ....", opsi: ["131", "144", "121", "22"], benar: 2 },
+      { soal: "5² = ....", opsi: ["25", "10", "16", "20"], benar: 0 },
+      { soal: "Kubik dari 3 adalah ....", opsi: ["24", "9", "64", "27"], benar: 3 },
+      { soal: "Kubik dari 2 adalah ....", opsi: ["27", "6", "18", "8"], benar: 3 },
+      { soal: "Kuadrat dari 10 adalah ....", opsi: ["30", "100", "20", "90"], benar: 1 },
+      { soal: "Kuadrat dari 2 adalah ....", opsi: ["6", "14", "2", "4"], benar: 3 },
+      { soal: "9² = ....", opsi: ["81", "72", "100", "91"], benar: 0 },
+      { soal: "Kuadrat dari 6 adalah ....", opsi: ["12", "46", "36", "49"], benar: 2 },
+      { soal: "Kuadrat dari 12 adalah ....", opsi: ["156", "144", "154", "169"], benar: 1 },
+      { soal: "3² = ....", opsi: ["6", "4", "9", "16"], benar: 2 },
+      { soal: "Kuadrat dari 5 adalah ....", opsi: ["10", "35", "15", "25"], benar: 3 },
+      { soal: "4³ = ....", opsi: ["64", "27", "68", "60"], benar: 0 },
+      { soal: "3³ = ....", opsi: ["27", "24", "30", "8"], benar: 0 },
+      { soal: "Kuadrat dari 9 adalah ....", opsi: ["100", "64", "81", "18"], benar: 2 },
+      { soal: "10² = ....", opsi: ["121", "100", "20", "90"], benar: 1 },
+      { soal: "Kuadrat dari 4 adalah ....", opsi: ["26", "16", "20", "12"], benar: 1 },
+      { soal: "6² = ....", opsi: ["49", "18", "36", "26"], benar: 2 }
+    ],
+    /* Level 2 */
+    2: [
+      { soal: "Kubik dari 5 adalah ....", opsi: ["135", "125", "25", "130"], benar: 1 },
+      { soal: "Kubik dari 3 adalah ....", opsi: ["17", "27", "9", "24"], benar: 1 },
+      { soal: "14² = ....", opsi: ["196", "225", "169", "186"], benar: 0 },
+      { soal: "Kuadrat dari 16 adalah ....", opsi: ["246", "272", "256", "266"], benar: 2 },
+      { soal: "16² = ....", opsi: ["225", "256", "289", "266"], benar: 1 },
+      { soal: "Kuadrat dari 13 adalah ....", opsi: ["159", "156", "182", "169"], benar: 3 },
+      { soal: "4³ = ....", opsi: ["60", "74", "64", "54"], benar: 2 },
+      { soal: "3³ = ....", opsi: ["9", "27", "8", "30"], benar: 1 },
+      { soal: "Kuadrat dari 15 adalah ....", opsi: ["196", "215", "225", "30"], benar: 2 },
+      { soal: "5³ = ....", opsi: ["216", "120", "25", "125"], benar: 3 },
+      { soal: "Kuadrat dari 12 adalah ....", opsi: ["169", "24", "144", "134"], benar: 2 },
+      { soal: "Kuadrat dari 14 adalah ....", opsi: ["210", "186", "28", "196"], benar: 3 },
+      { soal: "Kuadrat dari 18 adalah ....", opsi: ["306", "324", "314", "36"], benar: 1 },
+      { soal: "6³ = ....", opsi: ["226", "222", "18", "216"], benar: 3 },
+      { soal: "Kubik dari 6 adalah ....", opsi: ["226", "216", "210", "36"], benar: 1 },
+      { soal: "12² = ....", opsi: ["156", "134", "144", "132"], benar: 2 },
+      { soal: "Kuadrat dari 20 adalah ....", opsi: ["441", "40", "400", "361"], benar: 2 },
+      { soal: "Kubik dari 4 adalah ....", opsi: ["64", "16", "12", "60"], benar: 0 },
+      { soal: "18² = ....", opsi: ["289", "324", "361", "306"], benar: 1 },
+      { soal: "20² = ....", opsi: ["390", "400", "441", "361"], benar: 1 }
+    ],
+    /* Level 3 */
+    3: [
+      { soal: "Kuadrat dari 29 adalah ....", opsi: ["831", "841", "851", "900"], benar: 1 },
+      { soal: "30² = ....", opsi: ["890", "841", "900", "930"], benar: 2 },
+      { soal: "7³ = ....", opsi: ["216", "336", "350", "343"], benar: 3 },
+      { soal: "Kuadrat dari 22 adalah ....", opsi: ["66", "441", "484", "44"], benar: 2 },
+      { soal: "9³ = ....", opsi: ["720", "27", "729", "512"], benar: 2 },
+      { soal: "Kuadrat dari 23 adalah ....", opsi: ["552", "576", "529", "539"], benar: 2 },
+      { soal: "Kubik dari 8 adalah ....", opsi: ["64", "512", "504", "520"], benar: 1 },
+      { soal: "Kubik dari 9 adalah ....", opsi: ["719", "739", "729", "81"], benar: 2 },
+      { soal: "Kuadrat dari 26 adalah ....", opsi: ["676", "78", "625", "702"], benar: 0 },
+      { soal: "10³ = ....", opsi: ["1.331", "1.010", "1.000", "729"], benar: 2 },
+      { soal: "Kuadrat dari 25 adalah ....", opsi: ["576", "635", "625", "615"], benar: 2 },
+      { soal: "21² = ....", opsi: ["441", "462", "400", "431"], benar: 0 },
+      { soal: "27² = ....", opsi: ["784", "756", "54", "729"], benar: 3 },
+      { soal: "26² = ....", opsi: ["676", "78", "666", "52"], benar: 0 },
+      { soal: "29² = ....", opsi: ["870", "58", "841", "812"], benar: 2 },
+      { soal: "Kuadrat dari 30 adalah ....", opsi: ["910", "870", "961", "900"], benar: 3 },
+      { soal: "6³ = ....", opsi: ["222", "226", "216", "343"], benar: 2 },
+      { soal: "23² = ....", opsi: ["539", "506", "484", "529"], benar: 3 },
+      { soal: "Kuadrat dari 21 adalah ....", opsi: ["451", "42", "441", "462"], benar: 2 },
+      { soal: "Kuadrat dari 28 adalah ....", opsi: ["84", "756", "794", "784"], benar: 3 }
+    ]
+  },
+  /* ################ AKAR (Akar kuadrat & kubik) ################ */
+  akar: {
+    /* Level 1 */
+    1: [
+      { soal: "Akar kuadrat dari 81 adalah ....", opsi: ["8", "9", "40", "7"], benar: 1 },
+      { soal: "Akar kuadrat dari 25 adalah ....", opsi: ["10", "15", "5", "12"], benar: 2 },
+      { soal: "√81 = ....", opsi: ["11", "18", "40", "9"], benar: 3 },
+      { soal: "√64 = ....", opsi: ["9", "6", "8", "18"], benar: 2 },
+      { soal: "Akar kubik dari 8 adalah ....", opsi: ["6", "2", "3", "1"], benar: 1 },
+      { soal: "√100 = ....", opsi: ["10", "20", "11", "12"], benar: 0 },
+      { soal: "√4 = ....", opsi: ["1", "4", "3", "2"], benar: 3 },
+      { soal: "√36 = ....", opsi: ["6", "8", "4", "12"], benar: 0 },
+      { soal: "Akar kuadrat dari 9 adalah ....", opsi: ["6", "5", "4", "3"], benar: 3 },
+      { soal: "√144 = ....", opsi: ["12", "14", "24", "10"], benar: 0 },
+      { soal: "Akar kuadrat dari 144 adalah ....", opsi: ["24", "12", "13", "22"], benar: 1 },
+      { soal: "Akar kuadrat dari 36 adalah ....", opsi: ["12", "4", "7", "6"], benar: 3 },
+      { soal: "Akar kuadrat dari 49 adalah ....", opsi: ["8", "7", "5", "24"], benar: 1 },
+      { soal: "Akar kuadrat dari 16 adalah ....", opsi: ["2", "8", "4", "3"], benar: 2 },
+      { soal: "Akar kuadrat dari 64 adalah ....", opsi: ["7", "8", "18", "9"], benar: 1 },
+      { soal: "√121 = ....", opsi: ["10", "12", "22", "11"], benar: 3 },
+      { soal: "Akar kuadrat dari 121 adalah ....", opsi: ["10", "21", "11", "13"], benar: 2 },
+      { soal: "Akar kubik dari 27 adalah ....", opsi: ["2", "3", "13", "4"], benar: 1 },
+      { soal: "√9 = ....", opsi: ["4", "3", "6", "1"], benar: 1 },
+      { soal: "√25 = ....", opsi: ["12", "5", "4", "10"], benar: 1 }
+    ],
+    /* Level 2 */
+    2: [
+      { soal: "Akar kuadrat dari 169 adalah ....", opsi: ["13", "26", "15", "14"], benar: 0 },
+      { soal: "Akar kuadrat dari 196 adalah ....", opsi: ["12", "15", "14", "98"], benar: 2 },
+      { soal: "Akar kubik dari 125 adalah ....", opsi: ["4", "41", "15", "5"], benar: 3 },
+      { soal: "Akar kubik dari 27 adalah ....", opsi: ["13", "5", "1", "3"], benar: 3 },
+      { soal: "√225 = ....", opsi: ["14", "15", "17", "16"], benar: 1 },
+      { soal: "Akar kuadrat dari 289 adalah ....", opsi: ["144", "17", "15", "19"], benar: 1 },
+      { soal: "Akar kubik dari 216 adalah ....", opsi: ["18", "7", "6", "16"], benar: 2 },
+      { soal: "√169 = ....", opsi: ["13", "12", "84", "15"], benar: 0 },
+      { soal: "Akar kuadrat dari 324 adalah ....", opsi: ["28", "20", "19", "18"], benar: 3 },
+      { soal: "√256 = ....", opsi: ["32", "15", "16", "26"], benar: 2 },
+      { soal: "Akar kuadrat dari 361 adalah ....", opsi: ["19", "20", "180", "38"], benar: 0 },
+      { soal: "Akar kuadrat dari 225 adalah ....", opsi: ["15", "30", "13", "25"], benar: 0 },
+      { soal: "Akar kuadrat dari 400 adalah ....", opsi: ["30", "22", "200", "20"], benar: 3 },
+      { soal: "√324 = ....", opsi: ["20", "19", "28", "18"], benar: 3 },
+      { soal: "√289 = ....", opsi: ["144", "16", "19", "17"], benar: 3 },
+      { soal: "∛27 = ....", opsi: ["2", "9", "3", "13"], benar: 2 },
+      { soal: "Akar kuadrat dari 256 adalah ....", opsi: ["16", "32", "18", "17"], benar: 0 },
+      { soal: "√400 = ....", opsi: ["20", "21", "18", "200"], benar: 0 },
+      { soal: "√361 = ....", opsi: ["19", "17", "38", "21"], benar: 0 },
+      { soal: "Akar kubik dari 64 adalah ....", opsi: ["2", "21", "5", "4"], benar: 3 }
+    ],
+    /* Level 3 */
+    3: [
+      { soal: "Akar kuadrat dari 576 adalah ....", opsi: ["23", "288", "24", "22"], benar: 2 },
+      { soal: "Akar kubik dari 343 adalah ....", opsi: ["9", "17", "7", "8"], benar: 2 },
+      { soal: "√676 = ....", opsi: ["26", "25", "27", "36"], benar: 0 },
+      { soal: "Akar kubik dari 1.000 adalah ....", opsi: ["20", "10", "11", "333"], benar: 1 },
+      { soal: "Akar kuadrat dari 900 adalah ....", opsi: ["450", "32", "30", "29"], benar: 2 },
+      { soal: "Akar kuadrat dari 625 adalah ....", opsi: ["26", "25", "50", "312"], benar: 1 },
+      { soal: "Akar kuadrat dari 441 adalah ....", opsi: ["22", "21", "20", "23"], benar: 1 },
+      { soal: "∛729 = ....", opsi: ["7", "9", "27", "8"], benar: 1 },
+      { soal: "Akar kuadrat dari 676 adalah ....", opsi: ["24", "26", "52", "338"], benar: 1 },
+      { soal: "Akar kuadrat dari 529 adalah ....", opsi: ["24", "21", "23", "33"], benar: 2 },
+      { soal: "√900 = ....", opsi: ["30", "32", "29", "60"], benar: 0 },
+      { soal: "√484 = ....", opsi: ["24", "22", "242", "32"], benar: 1 },
+      { soal: "√441 = ....", opsi: ["22", "23", "21", "220"], benar: 2 },
+      { soal: "Akar kuadrat dari 729 adalah ....", opsi: ["27", "25", "364", "28"], benar: 0 },
+      { soal: "√729 = ....", opsi: ["27", "28", "29", "25"], benar: 0 },
+      { soal: "Akar kubik dari 512 adalah ....", opsi: ["7", "6", "9", "8"], benar: 3 },
+      { soal: "Akar kuadrat dari 841 adalah ....", opsi: ["29", "31", "58", "30"], benar: 0 },
+      { soal: "Akar kuadrat dari 784 adalah ....", opsi: ["26", "28", "30", "38"], benar: 1 },
+      { soal: "√576 = ....", opsi: ["34", "288", "26", "24"], benar: 3 },
+      { soal: "∛512 = ....", opsi: ["9", "18", "24", "8"], benar: 3 }
+    ]
+  },
+  /* ################ PERSEN (Hitung persentase) ################ */
+  persen: {
+    /* Level 1 */
+    1: [
+      { soal: "25% dari 112 = ....", opsi: ["84", "29", "28", "53"], benar: 2 },
+      { soal: "25% dari 20 = ....", opsi: ["15", "10", "5", "4"], benar: 2 },
+      { soal: "10% dari 30 = ....", opsi: ["3", "8", "6", "13"], benar: 0 },
+      { soal: "50% dari 118 = ....", opsi: ["60", "49", "59", "109"], benar: 2 },
+      { soal: "25% dari 48 = ....", opsi: ["36", "12", "11", "2"], benar: 1 },
+      { soal: "20% dari 155 = ....", opsi: ["62", "51", "30", "31"], benar: 3 },
+      { soal: "50% dari 74 = ....", opsi: ["27", "37", "36", "74"], benar: 1 },
+      { soal: "50% dari 34 = ....", opsi: ["34", "17", "18", "67"], benar: 1 },
+      { soal: "20% dari 105 = ....", opsi: ["20", "41", "84", "21"], benar: 3 },
+      { soal: "25% dari 104 = ....", opsi: ["52", "16", "26", "51"], benar: 2 },
+      { soal: "10% dari 60 = ....", opsi: ["54", "12", "16", "6"], benar: 3 },
+      { soal: "25% dari 184 = ....", opsi: ["56", "45", "46", "71"], benar: 2 },
+      { soal: "20% dari 200 = ....", opsi: ["60", "40", "80", "160"], benar: 1 },
+      { soal: "10% dari 170 = ....", opsi: ["153", "17", "34", "7"], benar: 1 },
+      { soal: "10% dari 200 = ....", opsi: ["30", "25", "20", "40"], benar: 2 },
+      { soal: "10% dari 20 = ....", opsi: ["2", "3", "4", "1"], benar: 0 },
+      { soal: "50% dari 120 = ....", opsi: ["50", "61", "60", "110"], benar: 2 },
+      { soal: "20% dari 60 = ....", opsi: ["22", "11", "12", "17"], benar: 2 },
+      { soal: "25% dari 140 = ....", opsi: ["60", "25", "35", "40"], benar: 2 },
+      { soal: "50% dari 54 = ....", opsi: ["27", "32", "28", "37"], benar: 0 }
+    ],
+    /* Level 2 */
+    2: [
+      { soal: "60% dari 350 = ....", opsi: ["420", "270", "215", "210"], benar: 3 },
+      { soal: "60% dari 160 = ....", opsi: ["86", "64", "96", "95"], benar: 2 },
+      { soal: "Berapa persen 8 dari 80?", opsi: ["8%", "5%", "20%", "10%"], benar: 3 },
+      { soal: "20% dari 190 = ....", opsi: ["76", "37", "38", "48"], benar: 2 },
+      { soal: "Berapa persen 5 dari 50?", opsi: ["5%", "10%", "15%", "20%"], benar: 1 },
+      { soal: "Berapa persen 40 dari 50?", opsi: ["40%", "80%", "85%", "70%"], benar: 1 },
+      { soal: "5% dari 240 = ....", opsi: ["17", "11", "12", "13"], benar: 2 },
+      { soal: "75% dari 168 = ....", opsi: ["126", "42", "201", "252"], benar: 0 },
+      { soal: "75% dari 132 = ....", opsi: ["98", "99", "109", "89"], benar: 1 },
+      { soal: "Berapa persen 30 dari 40?", opsi: ["75%", "65%", "25%", "85%"], benar: 0 },
+      { soal: "75% dari 368 = ....", opsi: ["276", "281", "277", "275"], benar: 0 },
+      { soal: "40% dari 360 = ....", opsi: ["149", "216", "144", "145"], benar: 2 },
+      { soal: "60% dari 100 = ....", opsi: ["61", "120", "60", "65"], benar: 2 },
+      { soal: "80% dari 230 = ....", opsi: ["46", "184", "194", "264"], benar: 1 },
+      { soal: "75% dari 88 = ....", opsi: ["65", "67", "22", "66"], benar: 3 },
+      { soal: "Berapa persen 25 dari 50?", opsi: ["40%", "60%", "50%", "100%"], benar: 2 },
+      { soal: "Berapa persen 4 dari 20?", opsi: ["40%", "4%", "80%", "20%"], benar: 3 },
+      { soal: "30% dari 380 = ....", opsi: ["104", "114", "115", "119"], benar: 1 },
+      { soal: "60% dari 230 = ....", opsi: ["139", "148", "198", "138"], benar: 3 },
+      { soal: "15% dari 80 = ....", opsi: ["12", "27", "24", "13"], benar: 0 }
+    ],
+    /* Level 3 */
+    3: [
+      { soal: "20% dari suatu bilangan adalah 75. Bilangan itu adalah ....", opsi: ["375", "750", "395", "355"], benar: 0 },
+      { soal: "50% dari suatu bilangan adalah 13. Bilangan itu adalah ....", opsi: ["76", "6", "52", "26"], benar: 3 },
+      { soal: "36% dari 1.250 = ....", opsi: ["800", "451", "486", "450"], benar: 3 },
+      { soal: "25% dari suatu bilangan adalah 34. Bilangan itu adalah ....", opsi: ["186", "116", "136", "156"], benar: 2 },
+      { soal: "Berapa persen 180 dari 200?", opsi: ["100%", "90%", "95%", "85%"], benar: 1 },
+      { soal: "75% dari suatu bilangan adalah 180. Bilangan itu adalah ....", opsi: ["220", "190", "480", "240"], benar: 3 },
+      { soal: "45% dari 600 = ....", opsi: ["370", "260", "269", "270"], benar: 3 },
+      { soal: "Berapa persen 57 dari 60?", opsi: ["57%", "95%", "85%", "5%"], benar: 1 },
+      { soal: "Berapa persen 120 dari 200?", opsi: ["60%", "120%", "65%", "40%"], benar: 0 },
+      { soal: "85% dari 340 = ....", opsi: ["290", "299", "289", "578"], benar: 2 },
+      { soal: "35% dari 1.680 = ....", opsi: ["1.176", "588", "598", "589"], benar: 1 },
+      { soal: "Berapa persen 350 dari 500?", opsi: ["30%", "80%", "60%", "70%"], benar: 3 },
+      { soal: "50% dari suatu bilangan adalah 5. Bilangan itu adalah ....", opsi: ["10", "55", "60", "30"], benar: 0 },
+      { soal: "Berapa persen 220 dari 400?", opsi: ["60%", "45%", "55%", "220%"], benar: 2 },
+      { soal: "45% dari 2.000 = ....", opsi: ["901", "899", "1.000", "900"], benar: 3 },
+      { soal: "40% dari suatu bilangan adalah 400. Bilangan itu adalah ....", opsi: ["1.050", "1.000", "440", "950"], benar: 1 },
+      { soal: "12% dari 1.075 = ....", opsi: ["229", "129", "134", "79"], benar: 1 },
+      { soal: "12% dari 550 = ....", opsi: ["66", "67", "65", "56"], benar: 0 },
+      { soal: "Berapa persen 26 dari 40?", opsi: ["55%", "70%", "60%", "65%"], benar: 3 },
+      { soal: "65% dari 1.640 = ....", opsi: ["1.076", "966", "1.066", "1.166"], benar: 2 }
+    ]
+  },
+  /* ################ FPB (Faktor Persekutuan Terbesar) ################ */
+  fpb: {
+    /* Level 1 */
+    1: [
+      { soal: "FPB dari 16 dan 18 adalah ....", opsi: ["144", "8", "2", "6"], benar: 2 },
+      { soal: "FPB dari 8 dan 24 adalah ....", opsi: ["8", "9", "16", "6"], benar: 0 },
+      { soal: "FPB dari 10 dan 26 adalah ....", opsi: ["1", "4", "2", "5"], benar: 2 },
+      { soal: "FPB dari 16 dan 30 adalah ....", opsi: ["5", "2", "240", "3"], benar: 1 },
+      { soal: "FPB dari 10 dan 15 adalah ....", opsi: ["3", "7", "5", "2"], benar: 2 },
+      { soal: "FPB dari 14 dan 28 adalah ....", opsi: ["7", "14", "4", "28"], benar: 1 },
+      { soal: "FPB dari 18 dan 27 adalah ....", opsi: ["10", "9", "2", "11"], benar: 1 },
+      { soal: "FPB dari 4 dan 16 adalah ....", opsi: ["16", "4", "6", "8"], benar: 1 },
+      { soal: "FPB dari 10 dan 20 adalah ....", opsi: ["5", "12", "20", "10"], benar: 3 },
+      { soal: "FPB dari 8 dan 20 adalah ....", opsi: ["10", "6", "2", "4"], benar: 3 },
+      { soal: "FPB dari 22 dan 26 adalah ....", opsi: ["13", "286", "11", "2"], benar: 3 },
+      { soal: "FPB dari 14 dan 16 adalah ....", opsi: ["4", "112", "3", "2"], benar: 3 },
+      { soal: "FPB dari 5 dan 25 adalah ....", opsi: ["10", "6", "7", "5"], benar: 3 },
+      { soal: "FPB dari 24 dan 26 adalah ....", opsi: ["3", "6", "13", "2"], benar: 3 },
+      { soal: "FPB dari 21 dan 30 adalah ....", opsi: ["6", "5", "3", "15"], benar: 2 },
+      { soal: "FPB dari 28 dan 30 adalah ....", opsi: ["10", "6", "7", "2"], benar: 3 },
+      { soal: "FPB dari 12 dan 20 adalah ....", opsi: ["6", "4", "60", "5"], benar: 1 },
+      { soal: "FPB dari 22 dan 28 adalah ....", opsi: ["4", "11", "2", "7"], benar: 2 },
+      { soal: "FPB dari 18 dan 30 adalah ....", opsi: ["9", "6", "10", "90"], benar: 1 },
+      { soal: "FPB dari 4 dan 10 adalah ....", opsi: ["2", "5", "4", "1"], benar: 0 }
+    ],
+    /* Level 2 */
+    2: [
+      { soal: "FPB dari 42 dan 87 adalah ....", opsi: ["4", "2", "21", "3"], benar: 3 },
+      { soal: "FPB dari 44 dan 52 adalah ....", opsi: ["6", "22", "4", "26"], benar: 2 },
+      { soal: "FPB dari 26 dan 34 adalah ....", opsi: ["2", "17", "3", "4"], benar: 0 },
+      { soal: "FPB dari 12 dan 94 adalah ....", opsi: ["4", "6", "564", "2"], benar: 3 },
+      { soal: "FPB dari 95 dan 100 adalah ....", opsi: ["50", "25", "2", "5"], benar: 3 },
+      { soal: "FPB dari 72 dan 92 adalah ....", opsi: ["6", "2", "8", "4"], benar: 3 },
+      { soal: "FPB dari 38 dan 74 adalah ....", opsi: ["2", "19", "37", "1.406"], benar: 0 },
+      { soal: "FPB dari 92 dan 96 adalah ....", opsi: ["23", "6", "4", "24"], benar: 2 },
+      { soal: "FPB dari 24 dan 46 adalah ....", opsi: ["552", "4", "8", "2"], benar: 3 },
+      { soal: "FPB dari 48 dan 84 adalah ....", opsi: ["14", "24", "8", "12"], benar: 3 },
+      { soal: "FPB dari 14 dan 44 adalah ....", opsi: ["2", "4", "308", "3"], benar: 0 },
+      { soal: "FPB dari 62 dan 68 adalah ....", opsi: ["2", "2.108", "1", "4"], benar: 0 },
+      { soal: "FPB dari 42 dan 78 adalah ....", opsi: ["13", "6", "3", "12"], benar: 1 },
+      { soal: "FPB dari 51 dan 81 adalah ....", opsi: ["17", "5", "1.377", "3"], benar: 3 },
+      { soal: "FPB dari 24 dan 28 adalah ....", opsi: ["4", "2", "8", "7"], benar: 0 },
+      { soal: "FPB dari 12 dan 44 adalah ....", opsi: ["4", "3", "2", "6"], benar: 0 },
+      { soal: "FPB dari 28 dan 42 adalah ....", opsi: ["15", "7", "6", "14"], benar: 3 },
+      { soal: "FPB dari 34 dan 92 adalah ....", opsi: ["1", "2", "4", "23"], benar: 1 },
+      { soal: "FPB dari 62 dan 80 adalah ....", opsi: ["40", "2", "31", "8"], benar: 1 },
+      { soal: "FPB dari 38 dan 64 adalah ....", opsi: ["2", "8", "16", "19"], benar: 0 }
+    ],
+    /* Level 3 */
+    3: [
+      { soal: "FPB dari 45 dan 216 adalah ....", opsi: ["18", "4", "6", "9"], benar: 3 },
+      { soal: "FPB dari 54 dan 226 adalah ....", opsi: ["18", "113", "2", "27"], benar: 2 },
+      { soal: "FPB dari 150 dan 159 adalah ....", opsi: ["6", "75", "3", "50"], benar: 2 },
+      { soal: "FPB dari 126 dan 146 adalah ....", opsi: ["21", "2", "1", "4"], benar: 1 },
+      { soal: "FPB dari 86, 166 dan 226 adalah ....", opsi: ["2", "1", "3", "43"], benar: 0 },
+      { soal: "FPB dari 175 dan 189 adalah ....", opsi: ["3", "9", "7", "35"], benar: 2 },
+      { soal: "FPB dari 60 dan 72 adalah ....", opsi: ["30", "12", "360", "10"], benar: 1 },
+      { soal: "FPB dari 84 dan 236 adalah ....", opsi: ["118", "14", "5", "4"], benar: 3 },
+      { soal: "FPB dari 186, 198 dan 201 adalah ....", opsi: ["11", "3", "2", "6"], benar: 1 },
+      { soal: "FPB dari 72 dan 192 adalah ....", opsi: ["18", "576", "24", "96"], benar: 2 },
+      { soal: "FPB dari 81 dan 141 adalah ....", opsi: ["9", "3", "6", "3.807"], benar: 1 },
+      { soal: "FPB dari 30 dan 69 adalah ....", opsi: ["3", "10", "5", "2"], benar: 0 },
+      { soal: "FPB dari 39 dan 225 adalah ....", opsi: ["15", "6", "5", "3"], benar: 3 },
+      { soal: "FPB dari 24 dan 148 adalah ....", opsi: ["3", "888", "4", "8"], benar: 2 },
+      { soal: "FPB dari 76, 102 dan 204 adalah ....", opsi: ["3", "51", "6", "2"], benar: 3 },
+      { soal: "FPB dari 70 dan 236 adalah ....", opsi: ["4", "3", "2", "35"], benar: 2 },
+      { soal: "FPB dari 28 dan 94 adalah ....", opsi: ["14", "4", "2", "7"], benar: 2 },
+      { soal: "FPB dari 54, 123 dan 192 adalah ....", opsi: ["27", "6", "3", "18"], benar: 2 },
+      { soal: "FPB dari 28 dan 218 adalah ....", opsi: ["1", "109", "4", "2"], benar: 3 },
+      { soal: "FPB dari 38 dan 50 adalah ....", opsi: ["950", "25", "19", "2"], benar: 3 }
+    ]
+  },
+  /* ################ KPK (Kelipatan Persekutuan Terkecil) ################ */
+  kpk: {
+    /* Level 1 */
+    1: [
+      { soal: "KPK dari 7 dan 8 adalah ....", opsi: ["16", "30", "49", "56"], benar: 3 },
+      { soal: "KPK dari 3 dan 6 adalah ....", opsi: ["12", "18", "9", "6"], benar: 3 },
+      { soal: "KPK dari 5 dan 6 adalah ....", opsi: ["60", "25", "36", "30"], benar: 3 },
+      { soal: "KPK dari 6 dan 9 adalah ....", opsi: ["3", "12", "18", "54"], benar: 2 },
+      { soal: "KPK dari 4 dan 6 adalah ....", opsi: ["18", "16", "24", "12"], benar: 3 },
+      { soal: "KPK dari 6 dan 7 adalah ....", opsi: ["42", "36", "49", "35"], benar: 0 },
+      { soal: "KPK dari 4 dan 7 adalah ....", opsi: ["14", "28", "22", "32"], benar: 1 },
+      { soal: "KPK dari 2 dan 3 adalah ....", opsi: ["6", "10", "3", "4"], benar: 0 },
+      { soal: "KPK dari 4 dan 10 adalah ....", opsi: ["40", "10", "28", "20"], benar: 3 },
+      { soal: "KPK dari 4 dan 5 adalah ....", opsi: ["1", "15", "24", "20"], benar: 3 },
+      { soal: "KPK dari 4 dan 9 adalah ....", opsi: ["36", "27", "1", "45"], benar: 0 },
+      { soal: "KPK dari 6 dan 10 adalah ....", opsi: ["30", "36", "32", "2"], benar: 0 },
+      { soal: "KPK dari 5 dan 7 adalah ....", opsi: ["40", "70", "14", "35"], benar: 3 },
+      { soal: "KPK dari 3 dan 4 adalah ....", opsi: ["15", "12", "8", "9"], benar: 1 },
+      { soal: "KPK dari 3 dan 10 adalah ....", opsi: ["26", "1", "33", "30"], benar: 3 },
+      { soal: "KPK dari 3 dan 9 adalah ....", opsi: ["18", "9", "27", "24"], benar: 1 },
+      { soal: "KPK dari 2 dan 4 adalah ....", opsi: ["4", "12", "8", "6"], benar: 0 },
+      { soal: "KPK dari 2 dan 7 adalah ....", opsi: ["14", "18", "7", "12"], benar: 0 },
+      { soal: "KPK dari 5 dan 8 adalah ....", opsi: ["16", "1", "80", "40"], benar: 3 },
+      { soal: "KPK dari 3 dan 7 adalah ....", opsi: ["21", "20", "14", "28"], benar: 0 }
+    ],
+    /* Level 2 */
+    2: [
+      { soal: "KPK dari 12 dan 13 adalah ....", opsi: ["156", "26", "168", "312"], benar: 0 },
+      { soal: "KPK dari 10 dan 11 adalah ....", opsi: ["1", "110", "220", "100"], benar: 1 },
+      { soal: "KPK dari 9 dan 19 adalah ....", opsi: ["190", "171", "38", "152"], benar: 1 },
+      { soal: "KPK dari 14 dan 18 adalah ....", opsi: ["2", "252", "126", "144"], benar: 2 },
+      { soal: "KPK dari 8 dan 18 adalah ....", opsi: ["54", "36", "72", "64"], benar: 2 },
+      { soal: "KPK dari 8 dan 13 adalah ....", opsi: ["26", "42", "104", "91"], benar: 2 },
+      { soal: "KPK dari 15 dan 20 adalah ....", opsi: ["45", "75", "40", "60"], benar: 3 },
+      { soal: "KPK dari 9 dan 13 adalah ....", opsi: ["104", "117", "1", "126"], benar: 1 },
+      { soal: "KPK dari 5 dan 17 adalah ....", opsi: ["80", "85", "90", "1"], benar: 1 },
+      { soal: "KPK dari 6 dan 20 adalah ....", opsi: ["80", "60", "40", "120"], benar: 1 },
+      { soal: "KPK dari 6 dan 8 adalah ....", opsi: ["28", "30", "32", "24"], benar: 3 },
+      { soal: "KPK dari 4 dan 17 adalah ....", opsi: ["72", "136", "34", "68"], benar: 3 },
+      { soal: "KPK dari 9 dan 11 adalah ....", opsi: ["22", "88", "99", "90"], benar: 2 },
+      { soal: "KPK dari 4 dan 14 adalah ....", opsi: ["28", "56", "32", "2"], benar: 0 },
+      { soal: "KPK dari 6 dan 19 adalah ....", opsi: ["114", "108", "133", "1"], benar: 0 },
+      { soal: "KPK dari 4 dan 18 adalah ....", opsi: ["54", "32", "18", "36"], benar: 3 },
+      { soal: "KPK dari 9 dan 15 adalah ....", opsi: ["30", "60", "36", "45"], benar: 3 },
+      { soal: "KPK dari 5 dan 13 adalah ....", opsi: ["65", "52", "60", "1"], benar: 0 },
+      { soal: "KPK dari 5 dan 20 adalah ....", opsi: ["20", "50", "15", "5"], benar: 0 },
+      { soal: "KPK dari 10 dan 17 adalah ....", opsi: ["170", "180", "34", "160"], benar: 0 }
+    ],
+    /* Level 3 */
+    3: [
+      { soal: "KPK dari 7 dan 36 adalah ....", opsi: ["86", "252", "216", "259"], benar: 1 },
+      { soal: "KPK dari 7, 11, dan 14 adalah ....", opsi: ["1", "28", "308", "154"], benar: 3 },
+      { soal: "KPK dari 33 dan 36 adalah ....", opsi: ["72", "396", "432", "429"], benar: 1 },
+      { soal: "KPK dari 28 dan 32 adalah ....", opsi: ["192", "64", "252", "224"], benar: 3 },
+      { soal: "KPK dari 9 dan 17 adalah ....", opsi: ["153", "144", "136", "162"], benar: 0 },
+      { soal: "KPK dari 10 dan 27 adalah ....", opsi: ["297", "74", "260", "270"], benar: 3 },
+      { soal: "KPK dari 6, 9, dan 12 adalah ....", opsi: ["48", "30", "36", "54"], benar: 2 },
+      { soal: "KPK dari 3, 8, dan 9 adalah ....", opsi: ["40", "144", "75", "72"], benar: 3 },
+      { soal: "KPK dari 8 dan 18 adalah ....", opsi: ["52", "72", "54", "64"], benar: 1 },
+      { soal: "KPK dari 2, 12, dan 14 adalah ....", opsi: ["86", "82", "84", "336"], benar: 2 },
+      { soal: "KPK dari 8 dan 19 adalah ....", opsi: ["152", "144", "54", "1"], benar: 0 },
+      { soal: "KPK dari 11 dan 21 adalah ....", opsi: ["252", "462", "1", "231"], benar: 3 },
+      { soal: "KPK dari 12 dan 18 adalah ....", opsi: ["54", "36", "48", "24"], benar: 1 },
+      { soal: "KPK dari 2, 7, dan 10 adalah ....", opsi: ["20", "72", "70", "38"], benar: 2 },
+      { soal: "KPK dari 2, 4, dan 13 adalah ....", opsi: ["52", "39", "50", "104"], benar: 0 },
+      { soal: "KPK dari 5, 8, dan 9 adalah ....", opsi: ["369", "44", "360", "720"], benar: 2 },
+      { soal: "KPK dari 9, 12, dan 15 adalah ....", opsi: ["1.620", "195", "3", "180"], benar: 3 },
+      { soal: "KPK dari 4, 8, dan 15 adalah ....", opsi: ["480", "135", "124", "120"], benar: 3 },
+      { soal: "KPK dari 6, 8, dan 15 adalah ....", opsi: ["720", "114", "120", "240"], benar: 2 },
+      { soal: "KPK dari 10 dan 26 adalah ....", opsi: ["130", "260", "156", "140"], benar: 0 }
+    ]
+  },
+  /* ################ WAKTU (Konversi jam-menit) ################ */
+  waktu: {
+    /* Level 1 */
+    1: [
+      { soal: "4 jam 30 menit = .... menit", opsi: ["300", "240", "270", "330"], benar: 2 },
+      { soal: "420 menit = .... jam", opsi: ["7", "6", "8", "14"], benar: 0 },
+      { soal: "10 jam = .... menit", opsi: ["600", "1.000", "630", "540"], benar: 0 },
+      { soal: "120 menit = .... jam", opsi: ["2", "3", "4", "5"], benar: 0 },
+      { soal: "5 jam = .... menit", opsi: ["300", "240", "150", "500"], benar: 0 },
+      { soal: "9 jam = .... menit", opsi: ["900", "550", "540", "510"], benar: 2 },
+      { soal: "360 menit = .... jam", opsi: ["9", "12", "8", "6"], benar: 3 },
+      { soal: "6 jam = .... menit", opsi: ["600", "360", "420", "300"], benar: 1 },
+      { soal: "60 menit = .... jam", opsi: ["3", "1", "4", "2"], benar: 1 },
+      { soal: "4 jam = .... menit", opsi: ["210", "400", "240", "300"], benar: 2 },
+      { soal: "600 menit = .... jam", opsi: ["10", "20", "13", "8"], benar: 0 },
+      { soal: "240 menit = .... jam", opsi: ["4", "8", "7", "2"], benar: 0 },
+      { soal: "2 jam 30 menit = .... menit", opsi: ["123", "180", "210", "150"], benar: 3 },
+      { soal: "3 jam = .... menit", opsi: ["240", "180", "300", "120"], benar: 1 },
+      { soal: "2 jam = .... menit", opsi: ["200", "90", "120", "130"], benar: 2 },
+      { soal: "7 jam = .... menit", opsi: ["210", "360", "420", "700"], benar: 2 },
+      { soal: "300 menit = .... jam", opsi: ["7", "5", "4", "6"], benar: 1 },
+      { soal: "480 menit = .... jam", opsi: ["11", "16", "10", "8"], benar: 3 },
+      { soal: "180 menit = .... jam", opsi: ["3", "5", "1", "6"], benar: 0 },
+      { soal: "1 jam 30 menit = .... menit", opsi: ["150", "30", "120", "90"], benar: 3 }
+    ],
+    /* Level 2 */
+    2: [
+      { soal: "3 jam 20 menit = .... menit", opsi: ["320", "200", "140", "260"], benar: 1 },
+      { soal: "7 jam = .... menit", opsi: ["450", "430", "390", "420"], benar: 3 },
+      { soal: "8 jam = .... menit", opsi: ["490", "240", "480", "510"], benar: 2 },
+      { soal: "220 menit = .... jam .... menit", opsi: ["3 jam 40 menit", "3 jam 50 menit", "3 jam 30 menit", "4 jam 30 menit"], benar: 0 },
+      { soal: "4 jam 20 menit = .... menit", opsi: ["255", "260", "250", "265"], benar: 1 },
+      { soal: "11 jam = .... menit", opsi: ["720", "660", "690", "630"], benar: 1 },
+      { soal: "160 menit = .... jam .... menit", opsi: ["2 jam 25 menit", "2 jam 40 menit", "3 jam 50 menit", "1 jam 30 menit"], benar: 1 },
+      { soal: "3 jam 40 menit = .... menit", opsi: ["220", "280", "210", "225"], benar: 0 },
+      { soal: "225 menit = .... jam .... menit", opsi: ["2 jam 55 menit", "3 jam 45 menit", "2 jam 35 menit", "3 jam 55 menit"], benar: 1 },
+      { soal: "12 jam = .... menit", opsi: ["750", "720", "360", "660"], benar: 1 },
+      { soal: "3 jam 50 menit = .... menit", opsi: ["290", "235", "225", "230"], benar: 3 },
+      { soal: "1 jam 30 menit = .... menit", opsi: ["90", "100", "30", "120"], benar: 0 },
+      { soal: "3 jam 30 menit = .... menit", opsi: ["200", "210", "270", "150"], benar: 1 },
+      { soal: "310 menit = .... jam .... menit", opsi: ["5 jam 20 menit", "4 jam 10 menit", "5 jam 25 menit", "5 jam 10 menit"], benar: 3 },
+      { soal: "75 menit = .... jam .... menit", opsi: ["1 jam 30 menit", "1 jam 15 menit", "2 jam 25 menit", "15 menit"], benar: 1 },
+      { soal: "5 jam 50 menit = .... menit", opsi: ["355", "350", "360", "380"], benar: 1 },
+      { soal: "4 jam 45 menit = .... menit", opsi: ["290", "225", "275", "285"], benar: 3 },
+      { soal: "1 jam 50 menit = .... menit", opsi: ["150", "110", "170", "105"], benar: 1 },
+      { soal: "195 menit = .... jam .... menit", opsi: ["3 jam 15 menit", "2 jam 5 menit", "3 jam 30 menit", "3 jam 5 menit"], benar: 0 },
+      { soal: "5 jam 15 menit = .... menit", opsi: ["255", "325", "345", "315"], benar: 3 }
+    ],
+    /* Level 3 */
+    3: [
+      { soal: "325 menit = .... jam .... menit", opsi: ["5 jam 25 menit", "6 jam 15 menit", "5 jam 40 menit", "4 jam 25 menit"], benar: 0 },
+      { soal: "9 jam 35 menit = .... menit", opsi: ["575", "935", "515", "565"], benar: 0 },
+      { soal: "280 menit = .... jam .... menit", opsi: ["5 jam 30 menit", "5 jam 50 menit", "4 jam 25 menit", "4 jam 40 menit"], benar: 3 },
+      { soal: "7 jam 10 menit = .... menit", opsi: ["430", "710", "460", "370"], benar: 0 },
+      { soal: "Pukul 11.10 ditambah 2 jam 15 menit menjadi pukul ....", opsi: ["13.35", "13.10", "13.25", "13.55"], benar: 2 },
+      { soal: "390 menit = .... jam .... menit", opsi: ["6 jam 40 menit", "5 jam 20 menit", "5 jam 30 menit", "6 jam 30 menit"], benar: 3 },
+      { soal: "7 jam 45 menit = .... menit", opsi: ["465", "405", "745", "470"], benar: 0 },
+      { soal: "385 menit = .... jam .... menit", opsi: ["7 jam 25 menit", "5 jam 35 menit", "7 jam 15 menit", "6 jam 25 menit"], benar: 3 },
+      { soal: "Pukul 10.20 ditambah 1 jam 25 menit menjadi pukul ....", opsi: ["11.45", "12.15", "12.00", "10.45"], benar: 0 },
+      { soal: "Lama waktu dari pukul 06.35 sampai pukul 10.20 adalah ....", opsi: ["2 jam 45 menit", "3 jam 45 menit", "3 jam 55 menit", "4 jam 55 menit"], benar: 1 },
+      { soal: "Pukul 11.40 ditambah 1 jam 5 menit menjadi pukul ....", opsi: ["12.35", "12.15", "13.45", "12.45"], benar: 3 },
+      { soal: "Pukul 08.50 ditambah 2 jam 30 menit menjadi pukul ....", opsi: ["11.20", "11.50", "11.30", "11.35"], benar: 0 },
+      { soal: "3 jam 25 menit = .... menit", opsi: ["325", "145", "205", "215"], benar: 2 },
+      { soal: "5 jam 30 menit = .... menit", opsi: ["325", "330", "530", "270"], benar: 1 },
+      { soal: "Pukul 07.20 ditambah 2 jam 10 menit menjadi pukul ....", opsi: ["09.30", "10.30", "09.45", "08.30"], benar: 0 },
+      { soal: "Pukul 11.10 ditambah 3 jam 15 menit menjadi pukul ....", opsi: ["14.55", "14.25", "14.15", "14.10"], benar: 1 },
+      { soal: "5 jam 20 menit = .... menit", opsi: ["320", "310", "520", "260"], benar: 0 },
+      { soal: "Lama waktu dari pukul 13.10 sampai pukul 15.05 adalah ....", opsi: ["1 jam 40 menit", "55 menit", "1 jam 55 menit", "45 menit"], benar: 2 },
+      { soal: "Lama waktu dari pukul 06.00 sampai pukul 09.15 adalah ....", opsi: ["4 jam 25 menit", "3 jam 30 menit", "3 jam 15 menit", "4 jam 5 menit"], benar: 2 },
+      { soal: "Pukul 12.00 ditambah 4 jam 55 menit menjadi pukul ....", opsi: ["16.55", "17.25", "16.40", "17.55"], benar: 0 }
+    ]
+  },
+  /* ################ JARAK (Konversi panjang) ################ */
+  jarak: {
+    /* Level 1 */
+    1: [
+      { soal: "3.000 m = .... km", opsi: ["3", "0,03", "30", "0,3"], benar: 0 },
+      { soal: "9 km = .... m", opsi: ["900.000", "9.000.000", "90.000", "9.000"], benar: 3 },
+      { soal: "70 mm = .... cm", opsi: ["0,007", "70", "7.000", "7"], benar: 3 },
+      { soal: "9 m = .... cm", opsi: ["9.000", "0,9", "90", "900"], benar: 3 },
+      { soal: "5 m = .... cm", opsi: ["500", "5", "50.000", "5.000"], benar: 0 },
+      { soal: "500 cm = .... m", opsi: ["5", "0,005", "500", "0,05"], benar: 0 },
+      { soal: "9 cm = .... mm", opsi: ["90", "0,9", "900", "9"], benar: 0 },
+      { soal: "200 cm = .... m", opsi: ["0,2", "2", "200", "2.000"], benar: 1 },
+      { soal: "6.000 m = .... km", opsi: ["6.000", "0,006", "0,6", "6"], benar: 3 },
+      { soal: "7 km = .... m", opsi: ["7.000.000", "700.000", "7.000", "700"], benar: 2 },
+      { soal: "3 m = .... cm", opsi: ["3.000", "300", "0,3", "30.000"], benar: 1 },
+      { soal: "1 km = .... m", opsi: ["1", "10", "100", "1.000"], benar: 3 },
+      { soal: "7.000 m = .... km", opsi: ["0,07", "7", "700", "70"], benar: 1 },
+      { soal: "7 m = .... cm", opsi: ["700", "7", "70", "700.000"], benar: 0 },
+      { soal: "50 mm = .... cm", opsi: ["5.000", "0,5", "5", "0,005"], benar: 2 },
+      { soal: "20 mm = .... cm", opsi: ["0,02", "0,002", "0,2", "2"], benar: 3 },
+      { soal: "3 cm = .... mm", opsi: ["30", "3.000", "3", "0,3"], benar: 0 },
+      { soal: "4.000 m = .... km", opsi: ["4", "0,04", "0,004", "4.000"], benar: 0 },
+      { soal: "30 mm = .... cm", opsi: ["0,3", "0,003", "30", "3"], benar: 3 },
+      { soal: "3 km = .... m", opsi: ["30.000", "3.000.000", "3.000", "30"], benar: 2 }
+    ],
+    /* Level 2 */
+    2: [
+      { soal: "36 m = .... dm", opsi: ["36.000", "360.000", "3.600", "360"], benar: 3 },
+      { soal: "58 cm = .... mm", opsi: ["58.000", "580", "5,8", "58"], benar: 1 },
+      { soal: "24 dam = .... m", opsi: ["240", "24.000", "2,4", "240.000"], benar: 0 },
+      { soal: "52 m = .... dm", opsi: ["0,52", "520", "52.000", "520.000"], benar: 1 },
+      { soal: "14 km = .... m", opsi: ["1.400.000", "14.000.000", "14", "14.000"], benar: 3 },
+      { soal: "8 km = .... hm", opsi: ["800", "80", "80.000", "0,08"], benar: 1 },
+      { soal: "30.500 m = .... km", opsi: ["0,0305", "30,5", "305", "30.500"], benar: 1 },
+      { soal: "20 km = .... m", opsi: ["20.000", "20", "200.000", "2.000.000"], benar: 0 },
+      { soal: "41 km = .... m", opsi: ["410.000", "41.000", "4.100", "41.000.000"], benar: 1 },
+      { soal: "2.200 dm = .... dam", opsi: ["2,2", "22", "22.000", "0,22"], benar: 1 },
+      { soal: "10 km = .... m", opsi: ["1.000.000", "100.000", "10", "10.000"], benar: 3 },
+      { soal: "40 m = .... cm", opsi: ["400", "4.000", "4.000.000", "40.000"], benar: 1 },
+      { soal: "27 dam = .... m", opsi: ["0,27", "2.700", "270", "27.000"], benar: 2 },
+      { soal: "235 mm = .... cm", opsi: ["23,5", "0,0235", "23.500", "235"], benar: 0 },
+      { soal: "41 km = .... hm", opsi: ["410", "0,41", "41", "410.000"], benar: 0 },
+      { soal: "16 hm = .... dam", opsi: ["1,6", "160.000", "160", "16"], benar: 2 },
+      { soal: "245 cm = .... dm", opsi: ["24.500", "0,0245", "24,5", "245"], benar: 2 },
+      { soal: "18.000 m = .... km", opsi: ["1.800", "0,18", "18", "0,018"], benar: 2 },
+      { soal: "27 m = .... dm", opsi: ["27", "27.000", "270.000", "270"], benar: 3 },
+      { soal: "50 m = .... dam", opsi: ["5", "0,005", "50", "0,5"], benar: 0 }
+    ],
+    /* Level 3 */
+    3: [
+      { soal: "4 km 950 m = .... m", opsi: ["49.500", "13.500", "4.950", "495.000"], benar: 2 },
+      { soal: "6 hm 20 m = .... m", opsi: ["80", "620", "62", "6,2"], benar: 1 },
+      { soal: "4 km = .... dm", opsi: ["400.000", "40.000", "4.000.000", "4.000"], benar: 1 },
+      { soal: "1 m 2 dm = .... dm", opsi: ["1.200", "12", "30", "102"], benar: 1 },
+      { soal: "60.000 cm = .... hm", opsi: ["6", "6.000", "60", "0,06"], benar: 0 },
+      { soal: "1 km 200 m = .... m", opsi: ["210", "1.200", "12", "10.200"], benar: 1 },
+      { soal: "4 m 75 cm = .... cm", opsi: ["115", "475", "4,75", "47,5"], benar: 1 },
+      { soal: "1 hm 40 m = .... m", opsi: ["14.000", "140", "14", "1.040"], benar: 1 },
+      { soal: "2 km 400 m = .... m", opsi: ["2.400", "20.400", "420", "240.000"], benar: 0 },
+      { soal: "7 dam 9 m = .... m", opsi: ["79", "160", "7,9", "790"], benar: 0 },
+      { soal: "40.000 cm = .... hm", opsi: ["0,004", "4", "40", "0,4"], benar: 1 },
+      { soal: "70.000 mm = .... dam", opsi: ["7", "0,007", "70", "0,07"], benar: 0 },
+      { soal: "2 dam = .... mm", opsi: ["2.000", "200.000", "20.000", "2.000.000"], benar: 2 },
+      { soal: "8.000 cm = .... dam", opsi: ["80", "0,08", "8", "0,8"], benar: 2 },
+      { soal: "40.000 mm = .... dam", opsi: ["40", "0,4", "4.000", "4"], benar: 3 },
+      { soal: "50.000 mm = .... dam", opsi: ["5.000", "0,5", "500", "5"], benar: 3 },
+      { soal: "8 hm = .... cm", opsi: ["800", "8.000.000", "80.000", "80.000.000"], benar: 2 },
+      { soal: "7.000 mm = .... m", opsi: ["7", "7.000", "70", "0,07"], benar: 0 },
+      { soal: "9 m 25 cm = .... cm", opsi: ["925", "9.025", "1.150", "92.500"], benar: 0 },
+      { soal: "7 hm 30 m = .... m", opsi: ["1.000", "7,3", "730", "7.030"], benar: 2 }
+    ]
+  }
+};
+
+/* =====================================================================
+   2) PENGATURAN GAME — boleh diubah guru
+   ===================================================================== */
+const JUMLAH_SOAL_PER_PERMAINAN = 15;   // jumlah soal yang harus dikerjakan tiap pemain (diambil acak dari bank soal)
+const WAKTU_NAIK_DETIK          = 12;   // makin kecil = balon makin cepat
+const JEDA_SALAH_MS             = 1800; // jeda singkat (menampilkan jawaban benar) setelah salah / waktu habis; jawaban benar TANPA jeda
+
+/* Warna 4 balon (tetap per opsi) */
+const BALON_WARNA = [
+  { bg: "#e53935", tc: "#ffffff", ts: "0 2px 3px rgba(0,0,0,.4)" },   // merah
+  { bg: "#fdd835", tc: "#3e2723", ts: "0 1px 0 rgba(255,255,255,.5)" },// kuning
+  { bg: "#43a047", tc: "#ffffff", ts: "0 2px 3px rgba(0,0,0,.4)" },   // hijau
+  { bg: "#1e88e5", tc: "#ffffff", ts: "0 2px 3px rgba(0,0,0,.4)" }    // biru
+];
+/* Warna area tiap pemain */
+const WARNA_PEMAIN = [
+  { garis: "#ff6f00", lembut: "rgba(255,160,0,.32)",  lembut2: "#fff3e0", gelap: "#e65100" },
+  { garis: "#7b1fa2", lembut: "rgba(171,71,188,.28)", lembut2: "#f3e5f5", gelap: "#4a148c" },
+  { garis: "#00897b", lembut: "rgba(38,166,154,.30)", lembut2: "#e0f2f1", gelap: "#004d40" },
+  { garis: "#d81b60", lembut: "rgba(240,98,146,.28)", lembut2: "#fce4ec", gelap: "#880e4f" }
+];
+
+/* =====================================================================
+   3) STATE & UTILITAS
+   ===================================================================== */
+const $ = (id) => document.getElementById(id);
+const S = {
+  jumlah: 2,            // jumlah pemain terpilih
+  level: 1,             // level soal terpilih (1 mudah, 2 sedang, 3 sulit)
+  mode: "tambah",        // mode soal terpilih (lihat INFO_MODE)
+  pemain: [],           // {nama, skor, terkunci, balon:[], areaEl}
+  soalMain: [],         // soal yang dipakai pada permainan ini
+  idx: -1,              // indeks ronde berjalan
+  status: "idle",       // idle | hitung | running | reveal | selesai
+  roundId: 0,           // penanda agar timer lama diabaikan
+  raf: 0, lastTs: 0, elapsed: 0, kecepatan: 0,
+  paused: false,
+  timers: [], namaTersimpan: ["", "", "", ""]
+};
+const acak = (arr) => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const atur = (fn, ms) => { const id = setTimeout(fn, ms); S.timers.push(id); return id; };
+const bersihTimer = () => { S.timers.forEach(clearTimeout); S.timers = []; };
+function tampilLayar(id) {
+  document.querySelectorAll(".layar").forEach((l) => l.classList.remove("aktif"));
+  $(id).classList.add("aktif");
+}
+
+/* =====================================================================
+   4) EFEK SUARA (Web Audio API — tanpa file audio)
+   ===================================================================== */
+let audioCtx = null, suaraAktif = true;
+function initAudio() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+  } catch (e) { audioCtx = null; }
+}
+function nada(freq, dur, tipe = "sine", vol = 0.2, tunda = 0, ke = null) {
+  if (!audioCtx || !suaraAktif) return;
+  const t = audioCtx.currentTime + tunda;
+  const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+  o.type = tipe; o.frequency.setValueAtTime(freq, t);
+  if (ke) o.frequency.exponentialRampToValueAtTime(ke, t + dur);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(vol, t + 0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start(t); o.stop(t + dur + 0.03);
+}
+function desis(dur, vol = 0.25, f = 1800) {
+  if (!audioCtx || !suaraAktif) return;
+  const n = Math.floor(audioCtx.sampleRate * dur);
+  const buf = audioCtx.createBuffer(1, n, audioCtx.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+  const src = audioCtx.createBufferSource(); src.buffer = buf;
+  const bp = audioCtx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = f;
+  const g = audioCtx.createGain(); g.gain.value = vol;
+  src.connect(bp); bp.connect(g); g.connect(audioCtx.destination); src.start();
+}
+const sfxPop     = () => { desis(0.09, 0.35, 2200); nada(700, 0.09, "triangle", 0.18, 0, 200); };
+const sfxBenar   = () => { [523, 659, 784, 1047].forEach((f, i) => nada(f, 0.18, "triangle", 0.22, i * 0.08)); };
+const sfxSkor    = () => { nada(988, 0.08, "square", 0.12); nada(1319, 0.22, "square", 0.12, 0.09); };
+const sfxSalah   = () => { nada(260, 0.35, "sawtooth", 0.16, 0, 110); nada(180, 0.3, "square", 0.1, 0.12, 80); };
+const sfxKlik    = () => nada(660, 0.07, "triangle", 0.15);
+const sfxHitung  = (akhir) => nada(akhir ? 1047 : 523, akhir ? 0.35 : 0.15, "triangle", 0.2);
+function sfxPerayaan() {
+  const m = [523, 659, 784, 1047, 784, 1047, 1319];
+  m.forEach((f, i) => nada(f, 0.22, "triangle", 0.22, i * 0.14));
+  [1047, 1319, 1568].forEach((f) => nada(f, 0.7, "sine", 0.15, 1.05));
+}
+
+/* =====================================================================
+   5) CONFETTI (canvas)
+   ===================================================================== */
+const kanvas = $("confetti"), kc = kanvas.getContext("2d");
+let partikel = [], confettiLoop = 0, hujanId = 0;
+const WARNA_CONFETTI = ["#e53935", "#fdd835", "#43a047", "#1e88e5", "#ab47bc", "#ff7043", "#26c6da", "#f06292"];
+function ukurKanvas() { kanvas.width = window.innerWidth; kanvas.height = window.innerHeight; }
+window.addEventListener("resize", ukurKanvas); ukurKanvas();
+function confettiLetup(x, y, n = 40, kuat = 9) {
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, v = (0.4 + Math.random()) * kuat;
+    partikel.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 4, w: 6 + Math.random() * 8, h: 4 + Math.random() * 6,
+      c: WARNA_CONFETTI[(Math.random() * WARNA_CONFETTI.length) | 0], r: Math.random() * 6, vr: (Math.random() - 0.5) * 0.4,
+      bulat: Math.random() < 0.3, umur: 0, maks: 90 + Math.random() * 60 });
+  }
+  jalankanConfetti();
+}
+function confettiJatuh(n = 8) {
+  for (let i = 0; i < n; i++) {
+    partikel.push({ x: Math.random() * kanvas.width, y: -20, vx: (Math.random() - 0.5) * 3, vy: 2 + Math.random() * 3, w: 7 + Math.random() * 9, h: 5 + Math.random() * 7,
+      c: WARNA_CONFETTI[(Math.random() * WARNA_CONFETTI.length) | 0], r: Math.random() * 6, vr: (Math.random() - 0.5) * 0.3,
+      bulat: Math.random() < 0.25, umur: 0, maks: 220 });
+  }
+  jalankanConfetti();
+}
+function jalankanConfetti() {
+  if (confettiLoop) return;
+  let last = performance.now();
+  const f = (ts) => {
+    const k = Math.min((ts - last) / 16.67, 3); last = ts;
+    kc.clearRect(0, 0, kanvas.width, kanvas.height);
+    partikel = partikel.filter((p) => p.umur < p.maks && p.y < kanvas.height + 30);
+    for (const p of partikel) {
+      p.vy += 0.22 * k; p.vx *= 0.995; p.x += p.vx * k; p.y += p.vy * k; p.r += p.vr * k; p.umur += k;
+      kc.save(); kc.globalAlpha = Math.max(0, Math.min(1, (p.maks - p.umur) / 25));
+      kc.translate(p.x, p.y); kc.rotate(p.r); kc.fillStyle = p.c;
+      if (p.bulat) { kc.beginPath(); kc.arc(0, 0, p.w / 2, 0, Math.PI * 2); kc.fill(); } else kc.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      kc.restore();
+    }
+    if (partikel.length || hujanId) confettiLoop = requestAnimationFrame(f);
+    else { confettiLoop = 0; kc.clearRect(0, 0, kanvas.width, kanvas.height); }
+  };
+  confettiLoop = requestAnimationFrame(f);
+}
+function mulaiHujanConfetti() {
+  stopHujanConfetti();
+  const w = kanvas.width, h = kanvas.height;
+  confettiLetup(w * 0.2, h * 0.6, 70, 13); confettiLetup(w * 0.8, h * 0.6, 70, 13); confettiLetup(w * 0.5, h * 0.4, 90, 14);
+  hujanId = setInterval(() => confettiJatuh(6), 140);
+  jalankanConfetti();
+}
+function stopHujanConfetti() { if (hujanId) { clearInterval(hujanId); hujanId = 0; } }
+function bersihConfetti() { stopHujanConfetti(); partikel = []; }
+
+/* =====================================================================
+   6) HALAMAN PEMBUKA & PENGATURAN PEMAIN
+   ===================================================================== */
+$("btnMulai").addEventListener("click", () => { initAudio(); sfxKlik(); renderMode(); tampilLayar("layarMode"); });
+$("btnKembaliMode").addEventListener("click", () => { sfxKlik(); tampilLayar("layarPembuka"); });
+$("btnKredit").addEventListener("click", () => { initAudio(); sfxKlik(); $("teksKredit").classList.toggle("tampil"); });
+$("btnGantiMode").addEventListener("click", () => { sfxKlik(); simpanNama(); renderMode(); tampilLayar("layarMode"); });
+
+const INFO_LEVEL = {
+  1: { nama: "Level 1 • Mudah", pendek: "Mudah", warna: "#43a047" },
+  2: { nama: "Level 2 • Sedang", pendek: "Sedang", warna: "#fb8c00" },
+  3: { nama: "Level 3 • Sulit", pendek: "Sulit", warna: "#e53935" }
+};
+/* Daftar mode soal (urutan = urutan kartu pada layar "Pilih Mode Soal") */
+const INFO_MODE = {
+  tambah:   { nama: "Penjumlahan", ket: "Tambah angka", ikon: "➕" },
+  kurang:   { nama: "Pengurangan", ket: "Kurangi angka", ikon: "➖" },
+  kali:     { nama: "Perkalian", ket: "Kali angka", ikon: "✖️" },
+  bagi:     { nama: "Pembagian", ket: "Bagi angka", ikon: "➗" },
+  campuran: { nama: "Campuran", ket: "Semua operasi hitung dasar", ikon: "🔀" },
+  pangkat:  { nama: "Pangkat", ket: "Kuadrat & kubik", ikon: "🔢" },
+  akar:     { nama: "Akar", ket: "Akar kuadrat & kubik", ikon: "√" },
+  persen:   { nama: "Persen", ket: "Hitung persentase", ikon: "%" },
+  fpb:      { nama: "FPB", ket: "Faktor Persekutuan Terbesar", ikon: "🔗" },
+  kpk:      { nama: "KPK", ket: "Kelipatan Persekutuan Terkecil", ikon: "🔗" },
+  waktu:    { nama: "Waktu", ket: "Konversi jam-menit", ikon: "⏰" },
+  jarak:    { nama: "Jarak", ket: "Konversi panjang", ikon: "📏" }
+};
+/* Warna kartu tiap mode: [terang, utama, bayangan] */
+const WARNA_MODE = {
+  tambah: ["#ff7676", "#ee4b4b", "#a31515"], kurang: ["#5cb0ff", "#2f80ed", "#14509c"], kali: ["#2fe0a8", "#0fb283", "#07664b"], bagi: ["#ffc04d", "#ff8a1f", "#a8510a"],
+  campuran: ["#b97bff", "#8a4fe0", "#4f2a91"], pangkat: ["#1fe0e0", "#08a6b0", "#04656c"], akar: ["#ff7ac0", "#e6409a", "#8f1a5c"], persen: ["#78d66a", "#38a853", "#1d6630"],
+  fpb: ["#7b86ff", "#4756e6", "#252f94"], kpk: ["#ff9468", "#e8552e", "#97280d"], waktu: ["#4fd5f2", "#0f9ad8", "#075c85"], jarak: ["#ea6bff", "#c02fe0", "#751a8a"]
+};
+const MODE_CAMPURAN = ["tambah", "kurang", "kali", "bagi"];   // sumber soal untuk mode Campuran
+function el(tag, kelas, teks) { const e = document.createElement(tag); if (kelas) e.className = kelas; if (teks !== undefined) e.textContent = teks; return e; }
+
+/* Layar 1: Pilih Mode Soal */
+function renderMode() {
+  const g = $("gridMode"); g.innerHTML = "";
+  Object.keys(INFO_MODE).forEach((k, idx) => {
+    const m = INFO_MODE[k], b = el("button", "kartu-mode"); b.type = "button";
+    const w = WARNA_MODE[k]; b.style.setProperty("--a", w[0]); b.style.setProperty("--b", w[1]); b.style.setProperty("--d", w[2]); b.style.setProperty("--i", idx);
+    const j = el("div", "km-judul"); j.appendChild(el("span", "km-ikon", m.ikon)); j.appendChild(el("span", "", m.nama));
+    b.appendChild(j); b.appendChild(el("div", "km-ket", m.ket));
+    b.addEventListener("click", () => { S.mode = k; sfxKlik(); renderSetup(); tampilLayar("layarSetup"); });
+    g.appendChild(b);
+  });
+}
+/* Layar 2: Pengaturan Pemain */
+function opsiBaris(wadah, daftar, aktif, klik) {
+  wadah.innerHTML = "";
+  daftar.forEach((d) => {
+    const b = el("button", "opsi" + (aktif(d.nilai) ? " aktif" : "")); b.type = "button";
+    if (d.warna) { const t = el("span", "titik"); t.style.setProperty("--k", d.warna); b.appendChild(t); }
+    b.appendChild(el("span", "", d.teks));
+    b.addEventListener("click", () => { simpanNama(); klik(d.nilai); sfxKlik(); renderSetup(); });
+    wadah.appendChild(b);
+  });
+}
+function renderSetup() {
+  const m = INFO_MODE[S.mode], chip = $("chipMode"); chip.innerHTML = "";
+  const w = WARNA_MODE[S.mode]; chip.style.background = "linear-gradient(160deg," + w[0] + "," + w[1] + ")"; chip.style.borderColor = "#fff"; chip.style.textShadow = "0 2px 3px rgba(0,0,0,.28)";
+  chip.appendChild(el("span", "km-ikon", m.ikon));
+  const tk = el("div", ""); tk.appendChild(document.createTextNode(m.nama)); tk.appendChild(el("small", "", m.ket)); chip.appendChild(tk);
+  opsiBaris($("pilihLevel"), [1, 2, 3].map((lv) => ({ nilai: lv, teks: INFO_LEVEL[lv].pendek, warna: INFO_LEVEL[lv].warna })),
+    (lv) => lv === S.level, (lv) => (S.level = lv));
+  opsiBaris($("pilihJumlah"), [2, 3, 4].map((n) => ({ nilai: n, teks: n + " Pemain" })), (n) => n === S.jumlah, (n) => (S.jumlah = n));
+  const g = $("gridNama"); g.innerHTML = "";
+  for (let i = 0; i < S.jumlah; i++) {
+    const baris = el("label", "baris-nama"); baris.style.setProperty("--c", WARNA_PEMAIN[i].garis);
+    const inp = el("input"); inp.type = "text"; inp.maxLength = 14; inp.id = "namaP" + i;
+    inp.placeholder = "Pemain " + (i + 1); inp.value = S.namaTersimpan[i] || ""; inp.autocomplete = "off";
+    baris.appendChild(el("span", "lencana-p", i + 1)); baris.appendChild(inp); g.appendChild(baris);
+  }
+  $("ringkasan").textContent = "📋 " + m.nama + " • " + INFO_LEVEL[S.level].pendek + " • " + S.jumlah + " pemain • " + JUMLAH_SOAL_PER_PERMAINAN + " soal per pemain";
+}
+function simpanNama() {
+  for (let i = 0; i < 4; i++) { const el = $("namaP" + i); if (el) S.namaTersimpan[i] = el.value; }
+}
+$("btnMasukGame").addEventListener("click", () => { initAudio(); sfxKlik(); simpanNama(); mulaiPermainan(); });
+
+/* =====================================================================
+   7) MEMULAI PERMAINAN
+   Setiap pemain punya kemajuan soal sendiri: begitu menjawab benar,
+   pemain itu langsung maju ke soal berikutnya tanpa menunggu pemain lain.
+   Semua pemain mendapat urutan soal yang sama (adil).
+   ===================================================================== */
+function bangunLangit() {
+  const l = $("langit"); l.innerHTML = "";
+  const awan = [[8, 38, 1], [30, 52, 0.8], [55, 44, 1.1], [75, 60, 0.9]];
+  awan.forEach(([top, dur, sk], i) => {
+    const a = document.createElement("div"); a.className = "awan";
+    a.style.top = (top + i * 3) + "vh"; a.style.animationDuration = dur + "s"; a.style.animationDelay = (-i * 11) + "s"; a.style.transform = "scale(" + sk + ")";
+    l.appendChild(a);
+  });
+  const b1 = document.createElement("div"); b1.className = "bukit"; b1.style.cssText = "left:-10vw;width:60vw;height:34vh";
+  const b2 = document.createElement("div"); b2.className = "bukit"; b2.style.cssText = "right:-12vw;width:70vw;height:28vh;background:linear-gradient(180deg,#9ccc65,#558b2f)";
+  l.appendChild(b1); l.appendChild(b2);
+}
+function mulaiPermainan() {
+  resetTotal();
+  for (let i = 0; i < S.jumlah; i++) {
+    const nm = (S.namaTersimpan[i] || "").trim() || ("Pemain " + (i + 1));
+    S.pemain.push({ nama: nm, skor: 0, idx: -1, status: "menunggu", elapsed: 0, lockT: 0, kecepatan: 0, balon: [] });
+  }
+  const n = JUMLAH_SOAL_PER_PERMAINAN;
+  if (S.mode === "campuran") {                             // bagi rata ke tambah, kurang, kali, bagi, lalu diacak
+    const kunci = acak(MODE_CAMPURAN), dasar = Math.floor(n / kunci.length); let sisa = n - dasar * kunci.length, hasil = [];
+    kunci.forEach((k) => { const jml = dasar + (sisa > 0 ? 1 : 0); if (sisa > 0) sisa--; hasil = hasil.concat(acak(bankSoal[k][S.level]).slice(0, jml)); });
+    S.soalMain = acak(hasil);
+  } else S.soalMain = acak(bankSoal[S.mode][S.level]).slice(0, n);
+  $("infoLevel").textContent = INFO_MODE[S.mode].nama + " • " + INFO_LEVEL[S.level].pendek;
+  bangunLangit(); bangunArena(); perbaruiSkor(-1);
+  tampilLayar("layarGame");
+  hitungMundur();
+}
+function hitungMundur() {
+  S.status = "hitung"; const rid = S.roundId;
+  const el = $("hitung"), sp = $("angkaHitung"); el.classList.add("tampil");
+  const seq = ["3", "2", "1", "TEMBAK!"];
+  seq.forEach((t, i) => atur(() => {
+    if (rid !== S.roundId) return;
+    sp.style.animation = "none"; void sp.offsetWidth; sp.style.animation = "";
+    sp.textContent = t; sp.style.fontSize = (t === "TEMBAK!") ? "0.5em" : "";
+    sfxHitung(i === 3);
+  }, i * 850));
+  atur(() => { if (rid !== S.roundId) return; el.classList.remove("tampil"); mulaiSemua(); }, seq.length * 850 + 300);
+}
+function bangunArena() {
+  const ar = $("arena"); ar.innerHTML = "";
+  S.pemain.forEach((p, i) => {
+    const a = document.createElement("div"); a.className = "area";
+    a.style.setProperty("--c", WARNA_PEMAIN[i].garis); a.style.setProperty("--cl", WARNA_PEMAIN[i].lembut);
+    a.innerHTML = '<div class="bar-atas"><div class="skor-pojok"><span class="mh">👑</span><span class="nm"></span><span class="sk">0</span></div><div class="no-soal"></div></div>' +
+                  '<div class="soal-area">Bersiap …</div><div class="ladang"></div>';
+    a.querySelector(".nm").textContent = p.nama;
+    ar.appendChild(a);
+    p.areaEl = a; p.badgeEl = a.querySelector(".skor-pojok"); p.skEl = a.querySelector(".sk");
+    p.noEl = a.querySelector(".no-soal"); p.soalEl = a.querySelector(".soal-area"); p.ladangEl = a.querySelector(".ladang");
+    p.noEl.textContent = "Soal 0/" + S.soalMain.length;
+  });
+}
+function perbaruiSkor(animasiIdx) {
+  const maks = Math.max(...S.pemain.map((p) => p.skor));
+  S.pemain.forEach((p, i) => {
+    p.skEl.textContent = p.skor;
+    p.badgeEl.classList.toggle("memimpin", maks > 0 && p.skor === maks);   // indikator pemain yang memimpin
+    if (i === animasiIdx) { p.skEl.classList.remove("naik"); void p.skEl.offsetWidth; p.skEl.classList.add("naik"); }
+  });
+}
+const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+function hapusBanner(p) { p.ladangEl.querySelectorAll(".banner-area").forEach((e) => e.remove()); }
+function tampilBanner(p, html, kelas) {
+  hapusBanner(p);
+  const b = document.createElement("div"); b.className = "banner-area " + kelas; b.innerHTML = html; p.ladangEl.appendChild(b);
+}
+
+/* =====================================================================
+   8) SOAL & BALON UNTUK SETIAP PEMAIN
+   ===================================================================== */
+function mulaiSemua() {
+  S.status = "running"; S.lastTs = performance.now();
+  S.pemain.forEach((p, i) => mulaiSoalPemain(i));
+  S.raf = requestAnimationFrame(frame);
+}
+function mulaiSoalPemain(i) {
+  const p = S.pemain[i];
+  p.idx++;
+  p.balon.forEach((b) => b.el.remove()); p.balon = [];
+  hapusBanner(p); p.areaEl.classList.remove("terkunci");
+  if (p.idx >= S.soalMain.length) {                       // pemain ini sudah menyelesaikan semua soal
+    p.status = "selesai"; p.noEl.textContent = "Selesai ✔"; p.soalEl.textContent = "🏁 Selesai!";
+    tampilBanner(p, "🏁 Selesai!<small>Skor: " + p.skor + " — menunggu pemain lain</small>", "selesai");
+    return;
+  }
+  const soal = S.soalMain[p.idx];
+  p.soalEl.textContent = soal.soal; p.soalEl.classList.toggle("panjang", soal.soal.length > 60);
+  p.soalEl.classList.remove("ganti"); void p.soalEl.offsetWidth; p.soalEl.classList.add("ganti");
+  p.noEl.textContent = "Soal " + (p.idx + 1) + "/" + S.soalMain.length;
+
+  const W = p.ladangEl.clientWidth, H = p.ladangEl.clientHeight;
+  const bw = Math.min(W * 0.44, H * 0.27, 210), bh = bw * 1.2;
+  const urutan = acak([0, 1, 2, 3]);                       // opsi diacak berbeda tiap pemain
+  const offset = [0, 0.65, 1.35, 2.0];
+  urutan.forEach((opsiIdx, k) => {
+    const teks = soal.opsi[opsiIdx], w = BALON_WARNA[opsiIdx], len = teks.length;
+    const el = document.createElement("div"); el.className = "balon";
+    el.style.width = bw + "px"; el.style.height = bh + "px";
+    el.style.setProperty("--bg", w.bg); el.style.setProperty("--ts", w.ts); el.style.color = w.tc;
+    const sp = document.createElement("span"); sp.textContent = teks;
+    let fs = len <= 3 ? bw * 0.3 : len <= 6 ? bw * 0.2 : len <= 12 ? bw * 0.15 : len <= 24 ? bw * 0.135 : bw * 0.113;
+    sp.style.fontSize = Math.max(11, fs) + "px"; if (len <= 6) sp.style.whiteSpace = "nowrap"; el.appendChild(sp);
+    const lane = k % 2, cx = (lane ? 0.73 : 0.27) * W;
+    const b = { el, opsi: opsiIdx, benar: opsiIdx === soal.benar, dead: false, exited: false, w: bw, h: bh,
+      baseX: cx - bw / 2, startY: H + offset[k] * bh + 10, amp: 5 + Math.random() * 6, freq: 1 + Math.random() * 0.8, phase: Math.random() * 6.28 };
+    el.style.transform = "translate(" + b.baseX + "px," + b.startY + "px)";
+    el.addEventListener("pointerdown", (e) => { e.preventDefault(); tembak(i, b); });
+    p.ladangEl.appendChild(el); p.balon.push(b);
+  });
+  p.kecepatan = (H + bh) / WAKTU_NAIK_DETIK;
+  p.elapsed = 0; p.status = "running";
+}
+function frame(ts) {
+  if (S.status !== "running") return;
+  let dt = (ts - S.lastTs) / 1000; S.lastTs = ts;
+  if (S.paused) { S.raf = requestAnimationFrame(frame); return; }
+  dt = Math.min(dt, 0.1);
+  S.pemain.forEach((p, i) => {
+    if (p.status === "running") {
+      p.elapsed += dt;
+      for (const b of p.balon) {
+        if (b.dead || b.exited) continue;
+        const y = b.startY - p.kecepatan * p.elapsed;
+        const x = b.baseX + Math.sin(p.elapsed * b.freq + b.phase) * b.amp;
+        b.el.style.transform = "translate(" + x.toFixed(1) + "px," + y.toFixed(1) + "px)";
+        if (y < -b.h - 70) { b.exited = true; b.el.remove(); }
+      }
+      if (p.balon.every((b) => b.dead || b.exited)) gagalSoal(i, "waktu");   // tidak sempat menembak = tidak menjawab
+    } else if (p.status === "kunci") {
+      p.lockT -= dt; if (p.lockT <= 0) mulaiSoalPemain(i);
+    }
+  });
+  if (S.status === "running" && S.pemain.every((p) => p.status === "selesai")) { selesaiSemua(); return; }
+  S.raf = requestAnimationFrame(frame);
+}
+
+/* =====================================================================
+   9) INTERAKSI: MENEMBAK BALON
+   ===================================================================== */
+function tembak(i, b) {
+  if (S.status !== "running" || S.paused) return;
+  const p = S.pemain[i]; if (p.status !== "running" || b.dead) return;
+  initAudio(); b.dead = true;
+  const r = b.el.getBoundingClientRect(), ar = p.ladangEl.getBoundingClientRect();
+  const cx = r.left + r.width / 2, cy = r.top + r.height / 2, lx = cx - ar.left, ly = cy - ar.top;
+  if (b.benar) {
+    p.skor++;
+    sfxPop(); sfxBenar(); atur(sfxSkor, 380);
+    p.balon = p.balon.filter((x) => x !== b);              // balon yang meletus dibiarkan beranimasi sendiri
+    b.el.classList.add("meletus"); atur(() => b.el.remove(), 300);
+    confettiLetup(cx, cy, 60, 9);
+    teksMelayang(p.ladangEl, lx, ly, "+1 ⭐", "#2e7d32");
+    perbaruiSkor(i);
+    mulaiSoalPemain(i);                                     // langsung maju ke soal berikutnya, tanpa jeda
+  } else {
+    sfxPop(); sfxSalah();
+    asap(p.ladangEl, lx, ly);
+    teksMelayang(p.ladangEl, lx, ly, "Salah ✖", "#c62828");
+    b.el.remove();
+    gagalSoal(i, "salah");
+  }
+}
+function gagalSoal(i, alasan) {   // salah / waktu habis: skor tetap, tampilkan jawaban sebentar lalu lanjut
+  const p = S.pemain[i]; if (p.status !== "running") return;
+  const soal = S.soalMain[p.idx];
+  p.status = "kunci"; p.lockT = JEDA_SALAH_MS / 1000;
+  p.balon.forEach((b) => { if (!b.dead && !b.exited) { b.dead = true; b.el.classList.add("memudar"); const el = b.el; setTimeout(() => el.remove(), 400); } });
+  tampilBanner(p, (alasan === "waktu" ? "⏰ Waktu habis" : "✖ Salah") + "<small>Jawaban: " + esc(soal.opsi[soal.benar]) + "</small>", "salah");
+}
+function asap(area, x, y) {   // efek asap abu-abu ringan
+  for (let k = 0; k < 7; k++) {
+    const e = document.createElement("div"); e.className = "asap";
+    e.style.left = (x - 17 + (Math.random() - 0.5) * 36) + "px"; e.style.top = (y - 17 + (Math.random() - 0.5) * 30) + "px";
+    e.style.setProperty("--dx", ((Math.random() - 0.5) * 70) + "px"); e.style.setProperty("--dy", (-30 - Math.random() * 60) + "px");
+    area.appendChild(e); setTimeout(() => e.remove(), 950);
+  }
+}
+function teksMelayang(area, x, y, teks, warna) {
+  const e = document.createElement("div"); e.className = "teks-melayang"; e.textContent = teks; e.style.color = warna;
+  e.style.left = x + "px"; e.style.top = (y - 20) + "px"; area.appendChild(e); setTimeout(() => e.remove(), 1200);
+}
+function selesaiSemua() {
+  cancelAnimationFrame(S.raf); S.status = "selesai";
+  atur(akhirPermainan, 1600);
+}
+
+/* =====================================================================
+   10) KONTROL GURU
+   ===================================================================== */
+$("btnRonde").addEventListener("click", () => {      // lewati: semua pemain langsung ke soal berikutnya
+  initAudio(); if (S.paused || S.status !== "running") return; sfxKlik();
+  S.pemain.forEach((p, i) => { if (p.status === "running" || p.status === "kunci") mulaiSoalPemain(i); });
+  toast("Soal berikutnya untuk semua pemain ⏭");
+});
+$("btnResetSkor").addEventListener("click", () => {
+  if (S.status === "hitung") return; sfxKlik();
+  konfirmasi("Reset skor semua pemain menjadi 0?", () => { S.pemain.forEach((p) => (p.skor = 0)); perbaruiSkor(-1); toast("Skor semua pemain direset"); });
+});
+$("btnResetGame").addEventListener("click", () => {
+  sfxKlik();
+  konfirmasi("Reset permainan dan kembali ke pengaturan pemain?", () => { resetTotal(); tampilLayar("layarSetup"); renderSetup(); });
+});
+$("btnSuara").addEventListener("click", () => { initAudio(); suaraAktif = !suaraAktif; $("btnSuara").textContent = suaraAktif ? "🔊" : "🔇"; sfxKlik(); toast(suaraAktif ? "Suara menyala" : "Suara dimatikan"); });
+$("btnHome").addEventListener("click", () => {
+  sfxKlik();
+  konfirmasi("Kembali ke halaman utama? Permainan yang berjalan akan dihentikan.", () => { resetTotal(); tampilLayar("layarPembuka"); });
+});
+let toastTimer = 0;
+function toast(teks) { const t = $("toast"); t.textContent = teks; t.classList.add("tampil"); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("tampil"), 1400); }
+let aksiModal = null;
+function konfirmasi(teks, aksi) { $("teksModal").textContent = teks; aksiModal = aksi; S.paused = true; $("modal").classList.add("tampil"); }
+function tutupModal() { $("modal").classList.remove("tampil"); S.paused = false; S.lastTs = performance.now(); aksiModal = null; }
+$("btnModalYa").addEventListener("click", () => { const a = aksiModal; tutupModal(); if (a) a(); });
+$("btnModalBatal").addEventListener("click", () => { sfxKlik(); tutupModal(); });
+
+/* Kembalikan semua state ke kondisi awal tanpa memuat ulang halaman */
+function resetTotal() {
+  S.roundId++; cancelAnimationFrame(S.raf); bersihTimer(); bersihConfetti();
+  S.status = "idle"; S.paused = false; S.idx = -1;
+  S.pemain = []; S.soalMain = [];
+  $("arena").innerHTML = "";
+  $("hitung").classList.remove("tampil"); $("modal").classList.remove("tampil");
+  $("podium").innerHTML = "";
+}
+
+/* =====================================================================
+   12) HALAMAN AKHIR: PODIUM JUARA
+   ===================================================================== */
+function akhirPermainan() {
+  cancelAnimationFrame(S.raf); bersihTimer(); S.status = "selesai";
+  const urut = S.pemain.map((p, i) => ({ nama: p.nama, skor: p.skor, i })).sort((a, b) => b.skor - a.skor || a.i - b.i);
+  let rank = 1;
+  urut.forEach((u, j) => { if (j > 0 && u.skor < urut[j - 1].skor) rank = j + 1; u.rank = rank; });
+  const juara = urut.filter((u) => u.rank === 1), maks = urut[0].skor;
+  const sub = $("subAkhir"); const lvTxt = " • " + INFO_MODE[S.mode].nama + " • " + INFO_LEVEL[S.level].pendek;
+  if (maks === 0) sub.textContent = "Belum ada skor. Yuk, coba lagi!" + lvTxt;
+  else if (juara.length === 1) sub.textContent = "🥇 Juara 1: " + juara[0].nama + " (" + juara[0].skor + " poin)" + lvTxt;
+  else sub.textContent = "🥇 Juara 1 bersama: " + juara.map((j) => j.nama).join(" & ") + lvTxt;
+
+  const pod = $("podium"); pod.innerHTML = "";
+  const tinggi = { 1: 100, 2: 76, 3: 58, 4: 44 }, medali = { 1: "🥇", 2: "🥈", 3: "🥉", 4: "4" };
+  const tampilUrut = urut.length >= 2 ? [urut[1], urut[0], ...urut.slice(2)] : urut;   // juara 1 di tengah/kanan
+  const batangList = [];
+  tampilUrut.forEach((u) => {
+    const it = document.createElement("div"); it.className = "p-item";
+    const warna = WARNA_PEMAIN[u.i];
+    it.innerHTML = '<div class="p-info">' + (u.rank === 1 && maks > 0 ? '<div class="p-mahkota">👑</div>' : "") +
+      '<div class="p-nama"></div><div class="p-skor">' + u.skor + ' poin</div></div><div class="p-batang">' + medali[u.rank] + '</div>';
+    it.querySelector(".p-nama").textContent = u.nama;
+    const bt = it.querySelector(".p-batang"); bt.style.setProperty("--c", warna.garis); bt.style.setProperty("--c2", warna.gelap);
+    batangList.push([bt, tinggi[u.rank] * 0.72]);
+    pod.appendChild(it);
+  });
+  tampilLayar("layarAkhir");
+  setTimeout(() => batangList.forEach(([bt, t]) => (bt.style.height = t + "%")), 120);
+  sfxPerayaan();
+  if (maks > 0) mulaiHujanConfetti(); else confettiLetup(window.innerWidth / 2, window.innerHeight / 2, 40, 8);
+}
+$("btnMainLagi").addEventListener("click", () => {
+  initAudio(); sfxKlik(); resetTotal(); renderSetup(); tampilLayar("layarSetup");
+});
+
+
+/* =====================================================================
+   LAYAR PENUH (Fullscreen API) — tombol di halaman pembuka & layar permainan
+   ===================================================================== */
+function layarPenuhAktif() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+function ubahLayarPenuh() {
+  const el = document.documentElement;
+  try {
+    if (layarPenuhAktif()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); }
+    else { const f = el.requestFullscreen || el.webkitRequestFullscreen; if (f) { const r = f.call(el); if (r && r.catch) r.catch(() => infoLayarPenuh()); } else infoLayarPenuh(); }
+  } catch (e) { infoLayarPenuh(); }
+}
+function infoLayarPenuh() { if (typeof toast === "function") toast("Layar penuh tidak diizinkan di sini. Tekan F11 pada browser."); }
+function perbaruiIkonLayarPenuh() {
+  const t = layarPenuhAktif() ? "Keluar Layar Penuh" : "Layar Penuh";
+  ["btnFullGame", "btnFullHome"].forEach((id) => { const b = $(id); if (b) { b.title = t; b.setAttribute("aria-label", t); b.classList.toggle("ik-hijau", layarPenuhAktif()); b.classList.toggle("ik-biru", !layarPenuhAktif()); } });
+}
+["btnFullGame", "btnFullHome"].forEach((id) => $(id).addEventListener("click", () => { initAudio(); ubahLayarPenuh(); }));
+document.addEventListener("fullscreenchange", perbaruiIkonLayarPenuh);
+document.addEventListener("webkitfullscreenchange", perbaruiIkonLayarPenuh);
+
+/* Cegah menu klik-kanan / seret agar nyaman di layar sentuh */
+document.addEventListener("contextmenu", (e) => e.preventDefault());
+</script>
+</body>
+</html>
